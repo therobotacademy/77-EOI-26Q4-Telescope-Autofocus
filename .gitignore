@@ -1,0 +1,11 @@
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Dataset v1 intermediate shard artifacts
+dataset-v2/shards/
+*.tmp.npz
+
+# OS noise
+.DS_Store
+Thumbs.db
