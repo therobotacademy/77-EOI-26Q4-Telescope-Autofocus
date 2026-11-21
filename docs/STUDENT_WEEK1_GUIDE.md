@@ -13,7 +13,7 @@ By next week's class, your goal is to close **Gate 1** (prove the sign is physic
 
 - [ ] **Day 1:** Verify your environment (Git LFS binary archives, Python stack) and reproduce the baseline CNN sanity check on the placeholder physical dataset.
 - [ ] **Day 2:** Understand the optical physics by hand (micro-sandbox calculations) and lock the **4 open Week-1 decisions** for your real telescope and camera.
-- [ ] **Day 3:** Dissect [`star_sim.py`](../Fourier-optics%20simulator/star_sim.py), plug in your real optics and your exact `"preprocesada"` function, and pass **Gate 1**.
+- [ ] **Day 3:** Dissect [`star_sim.py`](<../Fourier-optics%20simulator/star_sim.py>), plug in your real optics and your exact `"preprocesada"` function, and pass **Gate 1**.
 - [ ] **Day 4:** Rebuild your calibrated 20,000-star dataset safely (clearing stale shards first) and visually audit the generated frames.
 - [ ] **Day 5:** Implement and run the classical **HFR baseline** per $|\Delta z|$ bin to pass **Gate 2**.
 - [ ] **Day 6:** Prepare real-sky validation — capture a raw FITS focuser sweep (`FOCPOS`) or test your cut-out + preprocessing + HFR pipeline on [MILAN Sky Survey](https://zenodo.org/records/7304607) FITS frames.
@@ -22,7 +22,7 @@ By next week's class, your goal is to close **Gate 1** (prove the sign is physic
 ## Technical Prerequisites & Repository Map
 
 - **Software stack:** Python 3, `numpy`, `torch` (CPU is enough), `matplotlib`, plus `astropy` (for reading real FITS headers and pixel arrays) and Git LFS (`git lfs`).
-- **Hardware budget reference** (from the course sandbox benchmarks in [Problem Statement & Plan](../Single-Image%20Telescope%20Autofocus%20—%20Problem%20Statement%20&%20Plan.md)): on 2 Xeon CPU cores without a GPU, `64×64` cut-outs train at `~340 images/s` (`~1 min` per 20k-image epoch), whereas `128×128` drops to `~60 images/s` (`~5.5 min/epoch`). Keep cut-outs at `64×64` (`≤ 96×96`) and keep experiments under ~10 minutes.
+- **Hardware budget reference** (from the course sandbox benchmarks in [Problem Statement &amp; Plan](<../Single-Image%20Telescope%20Autofocus%20—%20Problem%20Statement%20&%20Plan.md>)): on 2 Xeon CPU cores without a GPU, `64×64` cut-outs train at `~340 images/s` (`~1 min` per 20k-image epoch), whereas `128×128` drops to `~60 images/s` (`~5.5 min/epoch`). Keep cut-outs at `64×64` (`≤ 96×96`) and keep experiments under ~10 minutes.
 - **Key repository documents (relative to this folder):**
   - Project overview: [`README.md`](../README.md)
   - Problem spec, metrics, 6-week gates & open decisions: [`Single-Image Telescope Autofocus — Problem Statement & Plan.md`](<../Single-Image%20Telescope%20Autofocus%20—%20Problem%20Statement%20&%20Plan.md>)
@@ -57,6 +57,7 @@ python train_check_v1.py defocus_stars_v1.npz 4
 ```
 
 **Expected output from `train_check_v1.py` (4 epochs, ~183 s on 2 CPU cores):**
+
 - Overall test MAE around `148 µm` and overall sign accuracy around `88.9%`.
 - Binned sign accuracy should show the characteristic near-focus dip and strong far-focus recovery:
   - `0 – 200 µm`: `~58%`
@@ -76,14 +77,15 @@ python train_check_v1.py defocus_stars_v1.npz 4
 Think of a classical V-curve focuser sweep as measuring the width of a spotlight beam on a wall as you move a magnifying lens forward and backward. Far on either side of focus, the spotlight forms a wide circle of the same diameter. Looking at **one frozen snapshot** of a clean circle tells you *how far* you are from focus, **not** whether to turn the focuser knob clockwise or counter-clockwise.
 
 In real reflecting or imperfectly corrected telescopes, **asymmetric wavefront aberrations** break that mirror symmetry:
+
 - With positive **spherical aberration** (`spherical_waves = 0.4` in `star_sim.py`, Zernike $Z_{11} = 6\rho^4 - 6\rho^2 + 1$), marginal rays (near the outer edge of the mirror) focus at a slightly different plane than paraxial rays (near the inner edge).
 - As a result, at equal $|\Delta z|$, **inside focus (`dz < 0`)** produces a crisper ring with a darker central shadow, while **outside focus (`dz > 0`)** shifts more energy inward, producing a softer, partially filled donut.
 
 Look closely at the two reference plots already generated in [`Fourier-optics simulator/`](<../Fourier-optics%20simulator/README_v1.md>):
 
-![Simulator v1 calibration vs real frame](../Fourier-optics%20simulator/sim_vs_real_v1.png)
+![Simulator v1 calibration vs real frame](<../Fourier-optics%20simulator/sim_vs_real_v1.png>)
 
-![Dataset v1 raw ADU samples across defocus](../Fourier-optics%20simulator/samples_v1.png)
+![Dataset v1 raw ADU samples across defocus](<../Fourier-optics%20simulator/samples_v1.png>)
 
 **Checkpoint question:** Compare the top row (`dz < 0`) against the bottom row (`dz > 0`) in `samples_v1.png` at `±1000 µm` vs. `±80 µm`. Why can *your* eye tell top from bottom at `±1000 µm` while `±80 µm` looks like two nearly identical blobs — and how does that explain why `train_check_v1.py` drops from `98%` sign accuracy above `800 µm` to `58%` below `200 µm`?
 
@@ -94,27 +96,48 @@ Look closely at the two reference plots already generated in [`Fourier-optics si
 Before trusting any simulator parameters for *your* telescope, check the focal-plane geometry by hand. Let's work through the exact numbers currently set in [`star_sim.py`](<../Fourier-optics%20simulator/star_sim.py>) (lines 25–71, placeholder `200 mm f/5` telescope, `λ = 0.55 µm`, `pixel_um = 3.76`, `pupil_px = 256`, `grid = 512`, `defocus_waves = ±11`):
 
 1. **Focal ratio ($N$):**
-   $$N = \frac{f}{D} = \frac{1000\text{ mm}}{200\text{ mm}} = 5.0$$
 
+   $$
+   N = \frac{f}{D} = \frac{1000\text{ mm}}{200\text{ mm}} = 5.0
+   $$
 2. **Focal-plane shift per 1 wave peak-to-valley of defocus (`Telescope.dz_per_wave()`):**
-   $$\Delta z_{\text{per wave}} = 8 N^2 \lambda = 8 \times (5.0)^2 \times 0.55\ \mu\text{m} = 200 \times 0.55 = 110.0\ \mu\text{m/wave}$$
+
+   $$
+   \Delta z_{\text{per wave}} = 8 N^2 \lambda = 8 \times (5.0)^2 \times 0.55\ \mu\text{m} = 200 \times 0.55 = 110.0\ \mu\text{m/wave}
+   $$
+
    Over `defocus_waves ∈ [-11, +11]`, the full focal error range is:
-   $$\Delta z \in [-11 \times 110,\ +11 \times 110] = [-1{,}210,\ +1{,}210]\ \mu\text{m}$$
 
+   $$
+   \Delta z \in [-11 \times 110,\ +11 \times 110] = [-1{,}210,\ +1{,}210]\ \mu\text{m}
+   $$
 3. **Camera sampling vs. FFT sampling (`zoom` and crop `side`):**
-   - Camera pixel size in diffraction ($\lambda/D$) units:
-     $$\texttt{cam\_px\_lod} = \frac{\text{pixel\_um}}{\lambda \cdot N} = \frac{3.76}{0.55 \times 5.0} = \frac{3.76}{2.75} \approx 1.3673\ \lambda/D\text{ per px}$$
-   - FFT pixel size in $\lambda/D$ units:
-     $$\texttt{fft\_px\_lod} = \frac{\texttt{pupil\_px}}{\texttt{grid}} = \frac{256}{512} = 0.50\ \lambda/D\text{ per px}$$
-   - FFT pixels per camera pixel:
-     $$\texttt{zoom} = \frac{1.36727}{0.50} \approx 2.7345$$
-   - Cropped FFT box for a `64×64` cut-out:
-     $$\texttt{side} = \lceil 64 \times 2.73455 \rceil = \lceil 175.01 \rceil = 176\ \text{px} \le 512\ (\texttt{grid})$$
-     *(If your camera has larger pixels or a faster focal ratio so `side > grid`, cropping fails — you would need to raise `grid` in `StarSimulator`!)*
 
+   - Camera pixel size in diffraction ($\lambda/D$) units:
+     $$
+     \texttt{cam\_px\_lod} = \frac{\text{pixel\_um}}{\lambda \cdot N} = \frac{3.76}{0.55 \times 5.0} = \frac{3.76}{2.75} \approx 1.3673\ \lambda/D\text{ per px}
+     $$
+   - FFT pixel size in $\lambda/D$ units:
+     $$
+     \texttt{fft\_px\_lod} = \frac{\texttt{pupil\_px}}{\texttt{grid}} = \frac{256}{512} = 0.50\ \lambda/D\text{ per px}
+     $$
+   - FFT pixels per camera pixel:
+     $$
+     \texttt{zoom} = \frac{1.36727}{0.50} \approx 2.7345
+     $$
+   - Cropped FFT box for a `64×64` cut-out:
+     $$
+     \texttt{side} = \lceil 64 \times 2.73455 \rceil = \lceil 175.01 \rceil = 176\ \text{px} \le 512\ (\texttt{grid})
+     $$
+
+     *(If your camera has larger pixels or a faster focal ratio so `side > grid`, cropping fails — you would need to raise `grid` in `StarSimulator`!)*
 4. **Geometric outer donut radius at $|\Delta z| = 1{,}210\ \mu\text{m}$:**
    At focal ratio $N$, an $f/N$ light cone opens with half-angle $\approx 1/(2N)$, so a defocus $|\Delta z|$ creates a geometric blur disk of outer radius:
-   $$R_{\text{outer}} \approx \frac{|\Delta z|}{2 N \cdot \text{pixel\_um}} = \frac{1{,}210}{2 \times 5.0 \times 3.76} = \frac{1{,}210}{37.6} \approx 32.18\ \text{px}$$
+
+   $$
+   R_{\text{outer}} \approx \frac{|\Delta z|}{2 N \cdot \text{pixel\_um}} = \frac{1{,}210}{2 \times 5.0 \times 3.76} = \frac{1{,}210}{37.6} \approx 32.18\ \text{px}
+   $$
+
    Because a `64×64` cut-out only extends `32 px` from the center (and stars also have `±3 px` center jitter plus `6–12 px` seeing blur), `±11` waves is right at the physical edge of the `64×64` frame — which is why Phase 6 (`P-11`) narrowed `defocus_waves` from its wider initial test to `±11`!
 
 > [!TIP]
@@ -124,14 +147,14 @@ Before trusting any simulator parameters for *your* telescope, check the focal-p
 
 ### Lock Down the 4 Open Decisions from Week 1
 
-In the [Problem Statement & Plan](<../Single-Image%20Telescope%20Autofocus%20—%20Problem%20Statement%20&%20Plan.md>), four decisions were left open for Week 1. Fill in your actual telescope numbers and commit to them before Wednesday/Thursday:
+In the [Problem Statement &amp; Plan](<../Single-Image%20Telescope%20Autofocus%20—%20Problem%20Statement%20&%20Plan.md>), four decisions were left open for Week 1. Fill in your actual telescope numbers and commit to them before Wednesday/Thursday:
 
-| # | Decision | Placeholder in `v1` | Your Value for This Course |
-|---|---|---|---|
-| 1 | **Telescope & camera** (`aperture_mm`, `focal_mm`, `obstruction`, `spider_vanes`, `pixel_um`, `gain`, `bias`) | `200 mm`, `1000 mm` (`f/5`), `0.30`, `0` vanes, `3.76 µm`, `1.0`, `100` | `[YOUR TELESCOPE & CAMERA]` |
-| 2 | **Canonical unit for $\Delta z$** | `µm` at the focal plane (`dz_um`, `110 µm/wave`) | `[µm / focuser steps / waves]` *(if steps, record `µm_per_step`)* |
-| 3 | **Target success thresholds** | Proposal: `≥ 95%` sign accuracy outside near-focus zone; `1–2` autofocus moves; beat HFR MAE | `[CONFIRM OR ADJUST]` |
-| 4 | **Real focuser sweep availability** | Pending (only 1 screenshot used so far) | `[YES (target date) / NO — use MILAN + own single FITS]` |
+| # | Decision                                                                                                                          | Placeholder in `v1`                                                                              | Your Value for This Course                                                |
+| - | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 1 | **Telescope & camera** (`aperture_mm`, `focal_mm`, `obstruction`, `spider_vanes`, `pixel_um`, `gain`, `bias`) | `200 mm`, `1000 mm` (`f/5`), `0.30`, `0` vanes, `3.76 µm`, `1.0`, `100`           | `[YOUR TELESCOPE & CAMERA]`                                             |
+| 2 | **Canonical unit for $\Delta z$**                                                                                         | `µm` at the focal plane (`dz_um`, `110 µm/wave`)                                           | `[µm / focuser steps / waves]` *(if steps, record `µm_per_step`)* |
+| 3 | **Target success thresholds**                                                                                               | Proposal: `≥ 95%` sign accuracy outside near-focus zone; `1–2` autofocus moves; beat HFR MAE | `[CONFIRM OR ADJUST]`                                                   |
+| 4 | **Real focuser sweep availability**                                                                                         | Pending (only 1 screenshot used so far)                                                            | `[YES (target date) / NO — use MILAN + own single FITS]`               |
 
 If you already have **raw FITS frames** (including the real frame behind your screenshot and your `"preprocesada"` script), inspect their true 16-bit headers and statistics first — do not rely on screenshot grayscale levels:
 
@@ -188,6 +211,7 @@ Open `Fourier-optics simulator/star_sim.py` alongside these notes:
 - **Lines 30–48:** Trains with `L1Loss` for `epochs` (`4` by default) and prints overall MAE, sign accuracy, and per-`|dz|` bin breakdown.
 
 **Notice two things missing in `train_check_v1.py` that you should fix in your own scripts from Day 4 onward:**
+
 1. It evaluates on `test_idx` instead of `val_idx` (`2,000` validation stars are already saved in the `.npz`!). Keep `test_idx` untouched during model tuning, preprocessing changes, and architecture comparisons — check `val_idx` while iterating.
 2. It uses raw 4-px border normalization rather than calling `star_sim.preprocess()`. Once you plug in your real `"preprocesada"` function, switch your training and baseline scripts to use it consistently.
 
@@ -234,7 +258,8 @@ plt.tight_layout(); plt.savefig("gate1_asymmetry.png", dpi=120)
 **Gate 1 pass criterion:** `intra` and `extra` show a clear, visible radial-profile difference (`gate1_asymmetry.png`), just like the bottom-right panel of `sim_vs_real_v1.png`.
 
 > [!CAUTION]
-> **Gate 1 Fallback (if your optics turn out completely symmetric):** If you own a well-corrected unobstructed refractor (`obstruction = 0`, `spherical_waves ≈ 0`), `intra` and `extra` will overlap almost completely (`diff_l1 ≈ 0`). Do **not** waste Weeks 2–4 trying to train a signed CNN on symmetric PSFs. Instead, apply the Risk Fallback from the [Problem Statement & Plan](<../Single-Image%20Telescope%20Autofocus%20—%20Problem%20Statement%20&%20Plan.md>):
+> **Gate 1 Fallback (if your optics turn out completely symmetric):** If you own a well-corrected unobstructed refractor (`obstruction = 0`, `spherical_waves ≈ 0`), `intra` and `extra` will overlap almost completely (`diff_l1 ≈ 0`). Do **not** waste Weeks 2–4 trying to train a signed CNN on symmetric PSFs. Instead, apply the Risk Fallback from the [Problem Statement &amp; Plan](<../Single-Image%20Telescope%20Autofocus%20—%20Problem%20Statement%20&%20Plan.md>):
+>
 > 1. Measure whether real frames actually show slight residual spherical aberration, astigmatism, or coma from your optical train and model that; **or**
 > 2. Pivot the single-image task to predicting **magnitude $|\Delta z|$** cleanly and pair it with a one-step focuser probe move to resolve the sign.
 
@@ -255,6 +280,7 @@ python plot_samples_v1.py defocus_stars_custom.npz samples_custom.png
 ```
 
 Inspect `samples_custom.png` carefully (do **not** skip visual audit — Phase 6 caught clipped donuts and excessive turbulence speckle on the first pass by looking at the PNG):
+
 - Do the largest positive and negative `dz` donuts stay inside the `64×64` frame even with jitter?
 - Does the speckle / seeing smoothness resemble your real frame?
 - Run a quick sanity check on `val_idx` (copy `train_check_v1.py` to a version that logs `val_idx` and uses your `preprocess()`), keeping `test_idx` untouched.
@@ -266,6 +292,7 @@ Inspect `samples_custom.png` carefully (do **not** skip visual audit — Phase 6
 To prove in Week 3 that a CNN is actually worthwhile, you first need a rock-solid classical benchmark on the **exact same dataset and $|\Delta z|$ bins**. That is **Gate 2**.
 
 Recall how **Half-Flux Radius (HFR)** works:
+
 1. Subtract the local sky + bias background from each `64×64` star cut-out (e.g., median of the outer 4-pixel border) and clip negative noise fluctuations at `0`.
 2. Compute the flux-weighted centroid $(x_c, y_c)$ inside the cut-out.
 3. Compute every pixel's distance $r_i$ from $(x_c, y_c)$, sort pixels by $r_i$, and find the radius where cumulative flux crosses `50%` of the total positive flux (`total_flux / 2`).
@@ -339,6 +366,7 @@ for name, split in [("VAL", va), ("TEST", te)]:
 ```
 
 Notice what this gives you immediately:
+
 - An honest, reproducible **Gate 2** error table across every $|\Delta z|$ bin.
 - A benchmark that uses **zero** signed information (HFR alone cannot tell inside from outside focus, so any guess at sign is ~50% random).
 - Notice also a key diagnostic question: at very low SNR (`ring_snr ≈ 3`) or near focus (`|dz| < 200 µm`), noisy background pixels clipped above zero can inflate HFR! Observing *where* HFR breaks down tells you why Week 3's CNN should beat it.
@@ -350,14 +378,18 @@ Notice what this gives you immediately:
 Synthetic accuracy only matters if it transfers to real sky frames. Use Day 6 to prepare real evaluation data for Week 5:
 
 ### Option A (Preferred, if skies are clear): Capture a Real FITS Focuser Sweep
+
 1. Point at a field containing at least one **isolated, medium-bright star** (avoid saturated cores above ~70% of your sensor's full well and avoid overlapping companions inside a `64×64` box).
 2. Using **NINA**, **Ekos**, or **ASCOM**, sweep the focuser across **15 to 25 evenly spaced steps** from well inside focus to well outside focus (matching your simulated `±dz` span as closely as practical).
 3. Save **raw 16-bit FITS** files (no stretching, no debayering if mono, or extract a single channel consistently if OSC) and verify that `FOCPOS` (or focuser step position) is recorded in each FITS header.
 4. Fit a classical V-curve (hyperbola or parabola) to `HFR(FOCPOS)` to estimate best focus $p^*$, and compute each frame's ground-truth label:
-   $$\Delta z = \texttt{FOCPOS} - p^*$$
+   $$
+   \Delta z = \texttt{FOCPOS} - p^*
+   $$
 5. Bonus insight: visually compare frames at equal $|\Delta z|$ on both sides of $p^*$ — this reveals your telescope's **true** spherical aberration direction and strength!
 
 ### Option B (Cloudy weather): Test Your Pipeline on MILAN Raw FITS
+
 Download a sample raw Stellina FITS file from the [MILAN Sky Survey on Zenodo](https://zenodo.org/records/7304607), extract a `64×64` star cut-out with `astropy.io.fits`, run your `preprocess()` and `compute_hfr()` functions on it, and inspect both the raw ADU values and preprocessed image side by side with a synthetic sample from `make_dataset_v1.py`.
 
 ---
@@ -376,14 +408,14 @@ Bring these five items to next week's class so we can clear **Gate 1 & Gate 2** 
 
 ## Troubleshooting & Common Pitfalls
 
-| Symptom | Likely Cause | Fix |
-|---|---|---|
-| `zipfile.BadZipFile: File is not a zip file` on `np.load(...)` | `.npz` is still a 130-byte Git LFS pointer | Run `git lfs install && git lfs pull` and check byte sizes (`~60 MB` / `~109 MB`) |
-| Rebuilt `.npz` still shows old telescope's stars | `make_dataset_v1.py` reused cached files in `shards/` | Delete `Fourier-optics simulator/shards/` before regenerating |
-| Shape/pool error or truncated PSF in `StarSimulator.batch()` | `side = ceil(cutout * zoom)` exceeded `grid = 512` | Print `side`; if `> 512`, pass a larger `grid` (e.g., `1024`) to `StarSimulator` |
-| Synthetic CNN scores high, real star prediction fails | `train_check_v1.py` used border normalization while real image used different `"preprocesada"` scaling | Replace `preprocess()` in `star_sim.py` and call it identically on synthetic and real cut-outs |
-| Unsure why `Benchmark v0/` gives `98.2%` sign easily | Invented ring-width shortcut `w = 1.5 + 0.5·d` | Never train/evaluate autofocus models on `Benchmark v0/`; use `Fourier-optics simulator/` |
-| Overfitting design choices to `test_idx` | Tuning hyperparameters directly against `test_idx` | Evaluate design iterations on `val_idx` (`2,000` samples); freeze `test_idx` until final checks |
+| Symptom                                                            | Likely Cause                                                                                               | Fix                                                                                                   |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `zipfile.BadZipFile: File is not a zip file` on `np.load(...)` | `.npz` is still a 130-byte Git LFS pointer                                                               | Run `git lfs install && git lfs pull` and check byte sizes (`~60 MB` / `~109 MB`)               |
+| Rebuilt `.npz` still shows old telescope's stars                 | `make_dataset_v1.py` reused cached files in `shards/`                                                  | Delete `Fourier-optics simulator/shards/` before regenerating                                       |
+| Shape/pool error or truncated PSF in `StarSimulator.batch()`     | `side = ceil(cutout * zoom)` exceeded `grid = 512`                                                     | Print `side`; if `> 512`, pass a larger `grid` (e.g., `1024`) to `StarSimulator`            |
+| Synthetic CNN scores high, real star prediction fails              | `train_check_v1.py` used border normalization while real image used different `"preprocesada"` scaling | Replace `preprocess()` in `star_sim.py` and call it identically on synthetic and real cut-outs    |
+| Unsure why `Benchmark v0/` gives `98.2%` sign easily           | Invented ring-width shortcut `w = 1.5 + 0.5·d`                                                          | Never train/evaluate autofocus models on `Benchmark v0/`; use `Fourier-optics simulator/`         |
+| Overfitting design choices to `test_idx`                         | Tuning hyperparameters directly against `test_idx`                                                       | Evaluate design iterations on `val_idx` (`2,000` samples); freeze `test_idx` until final checks |
 
 ---
 
@@ -398,31 +430,34 @@ This week shifts the project from a generic `200 mm f/5` placeholder to **your**
 ## Self-Check Quiz (5 Questions)
 
 1. **Why is an unobstructed, aberration-free refractor (`obstruction = 0`, `spherical_waves = 0`, no coma/astigmatism) a critical-path blocker for single-image signed autofocus?**
+
    - **A.** Because its FFT PSF cannot fit inside a `64×64` pixel array.
    - **B.** Because pure symmetric defocus produces identical PSFs inside and outside focus, making $\operatorname{sign}(\Delta z)$ mathematically unobservable from one frame.
    - **C.** Because without a central obstruction, HFR becomes negative inside focus.
-
 2. **Suppose you keep the same sensor (`pixel_um = 3.76`) and wavelength (`λ = 0.55 µm`), but switch from an `f/5` telescope (`dz_per_wave = 110 µm`) to an `f/10` telescope (`focal_mm = 2000`, `aperture_mm = 200`). Using $8 N^2 \lambda$, what is the new `dz_per_wave`?**
+
    - **A.** `220 µm/wave` (doubles linearly with focal ratio $N$).
    - **B.** `440 µm/wave` (quadruples because depth of focus scales with $N^2$).
    - **C.** `55 µm/wave` (halves because the light cone is narrower).
-
 3. **Why must you NOT claim that the autofocus sign task works based on the `98.2%` sign accuracy in `Benchmark v0/`?**
+
    - **A.** Because `Benchmark v0/` has only 2,000 training images and no validation split.
    - **B.** Because `Benchmark v0/` uses `uint16` photon counts instead of `float32` ADU.
    - **C.** Because `Benchmark v0/` encodes the sign with an artificial ring-width formula (`w = 1.5 + 0.5·d`), not physical optical aberrations.
-
 4. **You change `obstruction = 0.30` to `0.38` in `star_sim.py` and immediately run `python make_dataset_v1.py 20000 my_tel.npz` while an old `shards/` folder is still present. What happens?**
+
    - **A.** `make_dataset_v1.py` detects the `Telescope` change via `config` JSON and overwrites all shards cleanly.
    - **B.** `make_dataset_v1.py` skips every existing `shards/shard_XX.npz` and merges the *old* `0.30`-obstruction images into `my_tel.npz`.
    - **C.** Python raises a `FileExistsError` and refuses to run until `shards/` is deleted.
-
 5. **Which combination of practices prevents data leakage and sim-to-real mismatch when iterating on your model this week?**
+
    - **A.** Tune hyperparameters and HFR bin mappings on `train_idx` / `val_idx` only (keeping `test_idx` frozen), and apply the exact same `preprocess()` function to synthetic and real frames.
    - **B.** Evaluate every tweak on `test_idx` to get the cleanest estimate, and normalize synthetic frames with `4-px` border stats while normalizing real frames with your camera software's stretch.
    - **C.** Train on `Benchmark v0/` first so the CNN learns the sign quickly, then fine-tune on `test_idx`.
 
 ---
+
+Además he ido un poco más allá y te he preparado
 
 ## Answer Key
 
