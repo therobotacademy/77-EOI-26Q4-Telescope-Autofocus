@@ -28,7 +28,10 @@ X_test,  d_test  = X[z["test_idx"]],  d[z["test_idx"]]
 
 Ring radius R = 2 + 12·|d| px, width w = 1.5 + 0.5·d px, centred at (32, 32);
 counts = Poisson(200·exp(-(r-R)²/(2w²)) + 10). Rebuild with `python make_toy_defocus_stars.py`
-(needs numpy and torch; torch's random generator is what makes it reproducible).
+(needs numpy and torch; torch's random generator is what makes it reproducible), and render a
+2×6 sample grid with `python plot_toy_samples.py toy_defocus_stars_v0.npz toy_samples_v0.png`
+(needs numpy and matplotlib).
 
 No optics, seeing, read noise, saturation or off-centre framing. Full dataset card:
-https://claude.ai/artifact/BeuQhoPjsrbDBQujVyrooj
+[Dataset Card — Toy Defocused-Star Set (benchmark v0)](<../Dataset%20Card%20—%20Toy%20Defocused-Star%20Set%20%28benchmark%20v0%29.md>)
+(original Claude artifact: https://claude.ai/artifact/BeuQhoPjsrbDBQujVyrooj).

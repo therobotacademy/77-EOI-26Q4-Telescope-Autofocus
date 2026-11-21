@@ -2,6 +2,9 @@
 
 Nov 18, 2026 · @Bernardo
 
+> [!NOTE]
+> **Repository note:** This card was authored during [Phase 4 (`P-05`)](WORKFLOW_PROCEDURE.md#phase-4-toy-dataset-documentation--release) before the dataset archive was exported. In this repository, the seed-0 archive and accompanying scripts (`toy_defocus_stars_v0.npz`, `make_toy_defocus_stars.py`, `plot_toy_samples.py`) are saved under [`Benchmark v0/`](Benchmark%20v0/README.md).
+
 ## Summary
 
 This set is a toy, made only to time CNN training in the sandbox. It is not the project's star simulator and must not be used to judge the autofocus model. It holds 20,000 single-channel 64×64 images of a ring-shaped "defocused star", each labelled with a signed defocus value d in \[−1, 1\].

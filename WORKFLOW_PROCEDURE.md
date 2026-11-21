@@ -4,6 +4,7 @@
 > **Session distilled**: one Claude session, 2026-11-18, 10:14–11:22 (Europe/Madrid), Project "EOI Deep Learning"
 > **Methodology**: synthesis of the live conversation (verbatim prompts), sandbox file inventory and tool outputs.
 > **Sources available**: the conversation itself and the files in this folder. There is no `transcript.jsonl` and no git repository, so commit columns read "none" throughout.
+> **Repository layout note**: Outputs originally produced flat in the Claude sandbox are organized in this repository under [`Benchmark v0/`](Benchmark%20v0/README.md) (Phase 4) and [`Fourier-optics simulator/`](Fourier-optics%20simulator/README_v1.md) (Phase 6). Relative links below point to current repository paths; ephemeral sandbox-only scratch files not exported here are marked `(sandbox-only)`.
 
 ---
 
@@ -12,11 +13,11 @@
 | Phase | Focus Area | Key Actions Executed | Primary Artifacts |
 |---|---|---|---|
 | **Phase 1** | Data source survey | Searched Kaggle and the open web for star images labelled with focus error; none exists on Kaggle | Ranked list (in chat) |
-| **Phase 2** | Sandbox capability & labelling requirement | Measured hardware, installed CPU PyTorch, timed a CNN; defined how images get focus labels | `bench.py` |
-| **Phase 3** | Problem statement & plan | Wrote the problem, data/labels, constraints, metrics, 6-week gated plan, risks | Docs: *Problem Statement & Plan* |
-| **Phase 4** | Toy dataset documentation & release | Dataset card, downloadable `.npz`, sample grid and plotting script for the benchmark set | Docs: *Dataset Card v0*, [`toy_defocus_stars_v0.npz`](toy_defocus_stars_v0.npz) |
+| **Phase 2** | Sandbox capability & labelling requirement | Measured hardware, installed CPU PyTorch, timed a CNN; defined how images get focus labels | `bench.py` (sandbox-only) |
+| **Phase 3** | Problem statement & plan | Wrote the problem, data/labels, constraints, metrics, 6-week gated plan, risks | Docs: [*Problem Statement & Plan*](Single-Image%20Telescope%20Autofocus%20—%20Problem%20Statement%20&%20Plan.md) |
+| **Phase 4** | Toy dataset documentation & release | Dataset card, downloadable `.npz`, sample grid and plotting script for the benchmark set | Docs: [*Dataset Card v0*](Dataset%20Card%20—%20Toy%20Defocused-Star%20Set%20%28benchmark%20v0%29.md), [`Benchmark v0/toy_defocus_stars_v0.npz`](Benchmark%20v0/toy_defocus_stars_v0.npz) |
 | **Phase 5** | Plan feasibility check | Mapped each plan week to what runs in the sandbox; confirmed Zenodo/BBBC access; installed astropy, poppy | Feasibility table (in chat) |
-| **Phase 6** | Physical simulator calibrated on a real frame | Fourier-optics star simulator, fit to the real frame's radial profile, dataset v1 (20k), training sanity check | [`star_sim.py`](star_sim.py), [`defocus_stars_v1.npz`](defocus_stars_v1.npz) |
+| **Phase 6** | Physical simulator calibrated on a real frame | Fourier-optics star simulator, fit to the real frame's radial profile, dataset v1 (20k), training sanity check | [`Fourier-optics simulator/star_sim.py`](Fourier-optics%20simulator/star_sim.py), [`Fourier-optics simulator/defocus_stars_v1.npz`](Fourier-optics%20simulator/defocus_stars_v1.npz) |
 | **Phase 7** | Process distillation | This document | [`WORKFLOW_PROCEDURE.md`](WORKFLOW_PROCEDURE.md) |
 
 ---
@@ -97,7 +98,7 @@ sequenceDiagram
   2. Installed PyTorch 2.15 (CPU) and wrote `bench.py` (toy ring generator + 4-block CNN).
   3. Timed training: 64×64 ≈ 340 images/s (≈1 min per 20k-image epoch); 128×128 ≈ 60 images/s (≈5.5 min).
   4. Answered P-03: labels come for free from a simulator; real labels need a focuser sweep (FITS `FOCPOS` minus the V-curve best focus); unlabelled real sets give blur size only.
-* **Artifacts & Files Produced**: [`../bench.py`](../bench.py)
+* **Artifacts & Files Produced**: `../bench.py` (sandbox-only)
 * **Commands & Verification**:
   ```bash
   nproc; free -h; df -h; nvidia-smi; lscpu
@@ -143,9 +144,9 @@ sequenceDiagram
   3. Saved the set as exact uint16 photon counts plus `scale = 200` (60 MB), with a README and a rebuild script; reloaded and checked it against the card.
   4. Plotted 12 stars from d = −1 to +1, fixed overlapping labels, and released the plotting script.
 * **Artifacts & Files Produced**:
-  - Docs: [Dataset Card — Toy Defocused-Star Set (benchmark v0)](https://claude.ai/artifact/BeuQhoPjsrbDBQujVyrooj)
-  - [`toy_defocus_stars_v0.npz`](toy_defocus_stars_v0.npz), [`README.md`](README.md), [`make_toy_defocus_stars.py`](make_toy_defocus_stars.py)
-  - [`toy_samples_v0.png`](toy_samples_v0.png), [`plot_toy_samples.py`](plot_toy_samples.py)
+  - Docs: [Dataset Card — Toy Defocused-Star Set (benchmark v0)](https://claude.ai/artifact/BeuQhoPjsrbDBQujVyrooj) (exported locally as [`Dataset Card — Toy Defocused-Star Set (benchmark v0).md`](Dataset%20Card%20—%20Toy%20Defocused-Star%20Set%20%28benchmark%20v0%29.md))
+  - [`Benchmark v0/toy_defocus_stars_v0.npz`](Benchmark%20v0/toy_defocus_stars_v0.npz), [`Benchmark v0/README.md`](Benchmark%20v0/README.md), [`Benchmark v0/make_toy_defocus_stars.py`](Benchmark%20v0/make_toy_defocus_stars.py)
+  - `toy_samples_v0.png` (sandbox-only; rebuild with plotting script), [`Benchmark v0/plot_toy_samples.py`](Benchmark%20v0/plot_toy_samples.py)
 * **Commands & Verification**:
   ```bash
   python3 make_toy_defocus_stars.py          # writes toy_defocus_stars_v0.npz
@@ -189,9 +190,9 @@ sequenceDiagram
   4. Generated 20,000 images in shards of 2,000 after a long foreground run was killed. Reviewed the sample grid, then narrowed the ranges (±11 waves = ±1,210 µm so the donut fits; seeing 6–12 px and D/r0 2–5 to remove sharp speckle) and regenerated (398 s, 109 MB).
   5. Training check, 4 epochs (183 s): MAE 148 µm, sign accuracy 88.9% overall; 58% under 200 µm, 90% at 200–400, 95% at 400–800, 98% above 800 µm.
 * **Artifacts & Files Produced**:
-  - [`star_sim.py`](star_sim.py), [`make_dataset_v1.py`](make_dataset_v1.py), [`plot_samples_v1.py`](plot_samples_v1.py), [`train_check_v1.py`](train_check_v1.py), [`../fit_profile.py`](../fit_profile.py)
-  - [`defocus_stars_v1.npz`](defocus_stars_v1.npz), [`README_v1.md`](README_v1.md), [`real_frame_grey64.npy`](real_frame_grey64.npy)
-  - [`sim_vs_real_v1.png`](sim_vs_real_v1.png), [`samples_v1.png`](samples_v1.png), logs [`gen_v1.log`](gen_v1.log), [`train_v1.log`](train_v1.log)
+  - [`Fourier-optics simulator/star_sim.py`](Fourier-optics%20simulator/star_sim.py), [`Fourier-optics simulator/make_dataset_v1.py`](Fourier-optics%20simulator/make_dataset_v1.py), [`Fourier-optics simulator/plot_samples_v1.py`](Fourier-optics%20simulator/plot_samples_v1.py), [`Fourier-optics simulator/train_check_v1.py`](Fourier-optics%20simulator/train_check_v1.py), `../fit_profile.py` (sandbox-only)
+  - [`Fourier-optics simulator/defocus_stars_v1.npz`](Fourier-optics%20simulator/defocus_stars_v1.npz), [`Fourier-optics simulator/README_v1.md`](Fourier-optics%20simulator/README_v1.md), `real_frame_grey64.npy` (sandbox-only)
+  - [`Fourier-optics simulator/sim_vs_real_v1.png`](Fourier-optics%20simulator/sim_vs_real_v1.png), [`Fourier-optics simulator/samples_v1.png`](Fourier-optics%20simulator/samples_v1.png), logs `gen_v1.log` (sandbox-only), `train_v1.log` (sandbox-only)
 * **Commands & Verification**:
   ```bash
   PYTHONPATH=. python3 ../fit_profile.py                        # profile fit, ~18 s per grid
@@ -220,13 +221,13 @@ No git repository exists in the sandbox, so there are no commits. Files carry th
 
 | File | Last modified (2026-11-18, Madrid) | Phase |
 |---|---|---|
-| `../bench.py` | 10:19 | 2 |
-| `toy_defocus_stars_v0.npz`, `make_toy_defocus_stars.py`, `README.md` | 10:42 | 4 |
-| `plot_toy_samples.py`, `toy_samples_v0.png` | 10:45–10:46 | 4 |
-| `real_frame_grey64.npy`, `../fit_profile.py`, `sim_vs_real_v1.png` | 10:53–10:55 | 6 |
-| `make_dataset_v1.py`, `train_check_v1.py` | 11:02–11:03 | 6 |
-| `star_sim.py`, `README_v1.md`, `plot_samples_v1.py` | 11:11 | 6 |
-| `defocus_stars_v1.npz`, `samples_v1.png`, `train_v1.log` | 11:17–11:21 | 6 |
+| `../bench.py` *(sandbox-only)* | 10:19 | 2 |
+| `Benchmark v0/toy_defocus_stars_v0.npz`, `Benchmark v0/make_toy_defocus_stars.py`, `Benchmark v0/README.md` | 10:42 | 4 |
+| `Benchmark v0/plot_toy_samples.py`, `toy_samples_v0.png` *(sandbox-only)* | 10:45–10:46 | 4 |
+| `real_frame_grey64.npy` *(sandbox-only)*, `../fit_profile.py` *(sandbox-only)*, `Fourier-optics simulator/sim_vs_real_v1.png` | 10:53–10:55 | 6 |
+| `Fourier-optics simulator/make_dataset_v1.py`, `Fourier-optics simulator/train_check_v1.py` | 11:02–11:03 | 6 |
+| `Fourier-optics simulator/star_sim.py`, `Fourier-optics simulator/README_v1.md`, `Fourier-optics simulator/plot_samples_v1.py` | 11:11 | 6 |
+| `Fourier-optics simulator/defocus_stars_v1.npz`, `Fourier-optics simulator/samples_v1.png`, `train_v1.log` *(sandbox-only)* | 11:17–11:21 | 6 |
 
 To version this work, run `git init` in this folder and commit using your own git identity.
 
@@ -289,7 +290,7 @@ To version this work, run `git init` in this folder and commit using your own gi
 * **User Intent & Objective**: know whether experiments can run in the sandbox.
 * **Technical Actions & Artifacts Produced**:
   - Hardware inspection, CPU PyTorch install, CNN throughput benchmark.
-  - [`../bench.py`](../bench.py)
+  - `../bench.py` (sandbox-only)
 * **Associated Commits**: none
 
 #### Prompt P-03
@@ -337,7 +338,7 @@ To version this work, run `git init` in this folder and commit using your own gi
 * **User Intent & Objective**: get the data as a file.
 * **Technical Actions & Artifacts Produced**:
   - Saved as uint16 counts + scale (exact, 60 MB), reloaded and checked against the card.
-  - [`toy_defocus_stars_v0.npz`](toy_defocus_stars_v0.npz), [`README.md`](README.md), [`make_toy_defocus_stars.py`](make_toy_defocus_stars.py)
+  - [`Benchmark v0/toy_defocus_stars_v0.npz`](Benchmark%20v0/toy_defocus_stars_v0.npz), [`Benchmark v0/README.md`](Benchmark%20v0/README.md), [`Benchmark v0/make_toy_defocus_stars.py`](Benchmark%20v0/make_toy_defocus_stars.py)
 * **Associated Commits**: none
 
 #### Prompt P-07
@@ -349,7 +350,7 @@ To version this work, run `git init` in this folder and commit using your own gi
 * **User Intent & Objective**: see what the data looks like.
 * **Technical Actions & Artifacts Produced**:
   - 2×6 grid from d = −1 to +1, re-rendered once to fix overlapping labels.
-  - [`toy_samples_v0.png`](toy_samples_v0.png)
+  - `toy_samples_v0.png` (sandbox-only)
 * **Associated Commits**: none
 
 #### Prompt P-08
@@ -372,7 +373,7 @@ To version this work, run `git init` in this folder and commit using your own gi
 * **User Intent & Objective**: reuse the plotting code.
 * **Technical Actions & Artifacts Produced**:
   - Cleaned, commented, command-line script; re-run to confirm the same 12 images.
-  - [`plot_toy_samples.py`](plot_toy_samples.py)
+  - [`Benchmark v0/plot_toy_samples.py`](Benchmark%20v0/plot_toy_samples.py)
 * **Associated Commits**: none
 
 #### Prompt P-10
@@ -395,7 +396,7 @@ To version this work, run `git init` in this folder and commit using your own gi
 * **User Intent & Objective**: build the proposed simulator with typical values now.
 * **Technical Actions & Artifacts Produced**:
   - Simulator, profile fit to the real frame, 20k dataset in shards, review and regeneration, training check (88.9% sign accuracy).
-  - [`star_sim.py`](star_sim.py), [`make_dataset_v1.py`](make_dataset_v1.py), [`defocus_stars_v1.npz`](defocus_stars_v1.npz), [`README_v1.md`](README_v1.md), [`plot_samples_v1.py`](plot_samples_v1.py), [`train_check_v1.py`](train_check_v1.py), [`../fit_profile.py`](../fit_profile.py), [`real_frame_grey64.npy`](real_frame_grey64.npy), [`sim_vs_real_v1.png`](sim_vs_real_v1.png), [`samples_v1.png`](samples_v1.png)
+  - [`Fourier-optics simulator/star_sim.py`](Fourier-optics%20simulator/star_sim.py), [`Fourier-optics simulator/make_dataset_v1.py`](Fourier-optics%20simulator/make_dataset_v1.py), [`Fourier-optics simulator/defocus_stars_v1.npz`](Fourier-optics%20simulator/defocus_stars_v1.npz), [`Fourier-optics simulator/README_v1.md`](Fourier-optics%20simulator/README_v1.md), [`Fourier-optics simulator/plot_samples_v1.py`](Fourier-optics%20simulator/plot_samples_v1.py), [`Fourier-optics simulator/train_check_v1.py`](Fourier-optics%20simulator/train_check_v1.py), `../fit_profile.py` (sandbox-only), `real_frame_grey64.npy` (sandbox-only), [`Fourier-optics simulator/sim_vs_real_v1.png`](Fourier-optics%20simulator/sim_vs_real_v1.png), [`Fourier-optics simulator/samples_v1.png`](Fourier-optics%20simulator/samples_v1.png)
 * **Associated Commits**: none
 
 #### Prompt P-12
@@ -420,10 +421,10 @@ To version this work, run `git init` in this folder and commit using your own gi
 | **P-03** | Phase 2 | Labelling strategy | Label routes (chat) | none |
 | **P-04** | Phase 3 | Claude Docs | Problem Statement & Plan doc | none |
 | **P-05** | Phase 4 | Claude Docs | Dataset Card v0 doc | none |
-| **P-06** | Phase 4 | Toy dataset | `toy_defocus_stars_v0.npz`, `README.md`, `make_toy_defocus_stars.py` | none |
-| **P-07** | Phase 4 | Visualisation | `toy_samples_v0.png` | none |
+| **P-06** | Phase 4 | Toy dataset (`Benchmark v0/`) | `Benchmark v0/toy_defocus_stars_v0.npz`, `Benchmark v0/README.md`, `Benchmark v0/make_toy_defocus_stars.py` | none |
+| **P-07** | Phase 4 | Visualisation | `toy_samples_v0.png` *(sandbox-only)* | none |
 | **P-08** | Phase 5 | Feasibility | Per-week table (chat) | none |
-| **P-09** | Phase 4 | Visualisation | `plot_toy_samples.py` | none |
+| **P-09** | Phase 4 | Visualisation | `Benchmark v0/plot_toy_samples.py` | none |
 | **P-10** | Phase 6 | Simulator design | Fix proposal (chat) | none |
-| **P-11** | Phase 6 | Simulator + dataset v1 | `star_sim.py`, `make_dataset_v1.py`, `defocus_stars_v1.npz`, `README_v1.md`, `plot_samples_v1.py`, `train_check_v1.py`, `../fit_profile.py`, `real_frame_grey64.npy`, `sim_vs_real_v1.png`, `samples_v1.png` | none |
+| **P-11** | Phase 6 | Simulator + dataset v1 (`Fourier-optics simulator/`) | `Fourier-optics simulator/star_sim.py`, `Fourier-optics simulator/make_dataset_v1.py`, `Fourier-optics simulator/defocus_stars_v1.npz`, `Fourier-optics simulator/README_v1.md`, `Fourier-optics simulator/plot_samples_v1.py`, `Fourier-optics simulator/train_check_v1.py`, `../fit_profile.py` *(sandbox-only)*, `real_frame_grey64.npy` *(sandbox-only)*, `Fourier-optics simulator/sim_vs_real_v1.png`, `Fourier-optics simulator/samples_v1.png` | none |
 | **P-12** | Phase 7 | Documentation | `WORKFLOW_PROCEDURE.md` | none |

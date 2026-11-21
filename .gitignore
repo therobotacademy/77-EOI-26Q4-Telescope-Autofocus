@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 
 # Dataset v1 intermediate shard artifacts
-dataset-v2/shards/
+Fourier-optics simulator/shards/
 *.tmp.npz
 
 # OS noise

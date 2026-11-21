@@ -2,6 +2,9 @@
 
 Nov 18, 2026 · @Bernardo
 
+> [!NOTE]
+> **Repository note:** This plan was authored during [Phase 3 (`P-04`)](WORKFLOW_PROCEDURE.md#phase-3-problem-statement--plan) before building the simulator. An initial calibrated prototype matching Weeks 1–4 is now available in [`Fourier-optics simulator/`](Fourier-optics%20simulator/README_v1.md) (with the non-physical CPU benchmark placeholder in [`Benchmark v0/`](Benchmark%20v0/README.md)).
+
 ## Problem statement
 
 From one image of a star, estimate the telescope's signed focus error: how far the focuser is from best focus, and in which direction. A CNN trained on synthetic star images does the estimate.
@@ -47,7 +50,7 @@ The model succeeds if it beats the HFR baseline on blur size and gets the sign r
 
 | Metric                     | Measured on                                     | Target                          |
 | -------------------------- | ----------------------------------------------- | ------------------------------- |
-| Mean absolute error of Δz | Synthetic test set, per                         | Δz                             |
+| Mean absolute error of Δz | Synthetic test set, per \|Δz\| bin              | To agree (beat HFR baseline)    |
 | Sign accuracy              | Synthetic test set, outside the near-focus zone | To agree (proposal: ≥ 95%)     |
 | Sign accuracy              | Real focuser sweep, if captured                 | Reported, no target set yet     |
 | Blur size against HFR      | MILAN real frames                               | Reported as a correlation       |

@@ -50,6 +50,15 @@ Edit `Telescope` and `Ranges` at the top of `star_sim.py` for the real optics an
 `preprocess()` in `star_sim.py` is a placeholder: replace it with the real "preprocesada" step and
 apply it identically to synthetic and real images.
 
+## Scripts & figures in this folder
+
+- [`star_sim.py`](star_sim.py): Fourier-optics simulator (`Telescope`, `Ranges`, `StarSimulator`) and placeholder `preprocess()`.
+- [`make_dataset_v1.py`](make_dataset_v1.py): sharded dataset generator (2,000 images per shard, merged into `defocus_stars_v1.npz`).
+- [`plot_samples_v1.py`](plot_samples_v1.py): plots a 2×6 raw ADU grid across defocus (`samples_v1.png`).
+- [`train_check_v1.py`](train_check_v1.py): 4-epoch 4-block CNN sanity check reporting test MAE and sign accuracy per `|dz|` bin.
+- [`samples_v1.png`](samples_v1.png): 12-star sample grid from `dz = -1200 µm` to `+1200 µm`.
+- [`sim_vs_real_v1.png`](sim_vs_real_v1.png): comparison against the real raw frame, radial profile fit, and noise-free intra/extra sign cue.
+
 ## Known limits
 
 - Calibrated on ONE real frame, seen through a screenshot (grey levels, not true ADU).
