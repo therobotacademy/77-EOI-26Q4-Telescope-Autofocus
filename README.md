@@ -28,7 +28,7 @@ Instead of running a multi-frame V-curve sweep to find best focus, the model pre
    - `64×64` cut-outs train at `~340 images/s` (`~1 min` per 20k-image epoch), whereas `128×128` drops to `~60 images/s` (`~5.5 min/epoch`). Cut-outs are therefore capped at `64×64` (`≤ 96×96`) with a lightweight 4-block CNN.
    - Generating 20,000 physical images takes `398 s` (~6.6 min) and is split into 10 resumable shards of 2,000 images (`shards/shard_XX.npz`, seed `1000 + k`) so long runs survive execution limits.
 5. **Baseline CNN validation confirms the sign is learnable away from best focus** ([Phase 6](WORKFLOW_PROCEDURE.md#phase-6-physical-simulator-calibrated-on-a-real-frame): [P-11](WORKFLOW_PROCEDURE.md#prompt-p-11)).
-   A 4-block CNN ([`Fourier-optics simulator/train_check_v1.py`](Fourier-optics%20simulator/train_check_v1.py), L1 loss, 4-px border median/std normalization) trained on Dataset v1 (`Fourier-optics simulator/defocus_stars_v1.npz`) for 4 epochs (`183 s` on 2 CPU cores) achieved **`148 µm` test MAE** and **`88.9%` overall sign accuracy**:
+   A 4-block CNN ([`Fourier-optics simulator/train_check_v1.py`](<Fourier-optics%20simulator/train_check_v1.py>), L1 loss, 4-px border median/std normalization) trained on Dataset v1 (`Fourier-optics simulator/defocus_stars_v1.npz`) for 4 epochs (`183 s` on 2 CPU cores) achieved **`148 µm` test MAE** and **`88.9%` overall sign accuracy**:
 
    | $\lvert \Delta z \rvert$ bin (`µm`) | Sign accuracy | Interpretation                                                                 |
    | ---------------------------------------- | ------------- | ------------------------------------------------------------------------------ |
@@ -47,13 +47,13 @@ Generated in [Phase 6](WORKFLOW_PROCEDURE.md#phase-6-physical-simulator-calibrat
 
 Comparing the real raw frame (extracted from a screenshot) against three random synthetic ADU realizations, placeholder preprocessing, radial profile fit, and the noise-free intra-/extra-focal sign cue (`W = -9` vs. `W = +9` waves):
 
-![Simulator v1 vs Real Frame](Fourier-optics%20simulator/sim_vs_real_v1.png)
+![Simulator v1 vs Real Frame](<Fourier-optics%20simulator/sim_vs_real_v1.png>)
 
 ### Synthetic Raw ADU Samples Across Defocus (`-1200 µm` to `+1200 µm`)
 
 Top row: inside focus (`dz < 0`, sharper ring outer edge, deeper hole). Bottom row: outside focus (`dz > 0`, softer, more centrally filled ring):
 
-![Dataset v1 Samples](Fourier-optics%20simulator/samples_v1.png)
+![Dataset v1 Samples](<Fourier-optics%20simulator/samples_v1.png>)
 
 ---
 
@@ -62,11 +62,11 @@ Top row: inside focus (`dz < 0`, sharper ring outer edge, deeper hole). Bottom r
 > [!IMPORTANT]
 > **Two Dataset Directories by Purpose:**
 >
-> - [`Benchmark v0/`](Benchmark%20v0/README.md) → non-physical Gaussian-ring toy benchmark (`toy_defocus_stars_v0.npz`) created for CPU timing and smoke tests ([Phase 2](WORKFLOW_PROCEDURE.md#phase-2-sandbox-capability--labelling-requirement) [`P-02`](WORKFLOW_PROCEDURE.md#prompt-p-02) & [Phase 4](WORKFLOW_PROCEDURE.md#phase-4-toy-dataset-documentation--release) [`P-05`](WORKFLOW_PROCEDURE.md#prompt-p-05)–[`P-07`](WORKFLOW_PROCEDURE.md#prompt-p-07), [`P-09`](WORKFLOW_PROCEDURE.md#prompt-p-09)).
-> - [`Fourier-optics simulator/`](Fourier-optics%20simulator/README_v1.md) → calibrated physical Fourier-optics simulator (`star_sim.py`) and Dataset v1 (`defocus_stars_v1.npz`) ([Phase 6](WORKFLOW_PROCEDURE.md#phase-6-physical-simulator-calibrated-on-a-real-frame) [`P-10`](WORKFLOW_PROCEDURE.md#prompt-p-10)–[`P-11`](WORKFLOW_PROCEDURE.md#prompt-p-11)).
+> - [`Benchmark v0/`](<Benchmark%20v0/README.md>) → non-physical Gaussian-ring toy benchmark (`toy_defocus_stars_v0.npz`) created for CPU timing and smoke tests ([Phase 2](WORKFLOW_PROCEDURE.md#phase-2-sandbox-capability--labelling-requirement) [`P-02`](WORKFLOW_PROCEDURE.md#prompt-p-02) & [Phase 4](WORKFLOW_PROCEDURE.md#phase-4-toy-dataset-documentation--release) [`P-05`](WORKFLOW_PROCEDURE.md#prompt-p-05)–[`P-07`](WORKFLOW_PROCEDURE.md#prompt-p-07), [`P-09`](WORKFLOW_PROCEDURE.md#prompt-p-09)).
+> - [`Fourier-optics simulator/`](<Fourier-optics%20simulator/README_v1.md>) → calibrated physical Fourier-optics simulator (`star_sim.py`) and Dataset v1 (`defocus_stars_v1.npz`) ([Phase 6](WORKFLOW_PROCEDURE.md#phase-6-physical-simulator-calibrated-on-a-real-frame) [`P-10`](WORKFLOW_PROCEDURE.md#prompt-p-10)–[`P-11`](WORKFLOW_PROCEDURE.md#prompt-p-11)).
 
 ```text
-eoi-dl/
+77-EOI-26Q4-Telescope-Autofocus/
 ├── README.md                                                     # This overview
 ├── claude.txt                                                    # External Claude conversation URL
 ├── WORKFLOW_PROCEDURE.md                                         # 7-phase, 12-prompt workflow & traceability matrix
@@ -74,6 +74,8 @@ eoi-dl/
 ├── Single-Image Telescope Autofocus — Problem Statement & Plan.pdf   # Exported PDF version
 ├── Single-Image Telescope Autofocus — Problem Statement & Plan.docx  # Exported Word version
 ├── Dataset Card — Toy Defocused-Star Set (benchmark v0).md       # Formal dataset card for Benchmark v0
+├── docs/
+│   └── STUDENT_WEEK1_GUIDE.md                                    # 7-day student self-study guide (Week 1 → Week 2)
 ├── image/
 │   └── Single-ImageTelescopeAutofocus—ProblemStatement&Plan/
 │       └── 1794995707971.png                                     # 6-week gated roadmap diagram
@@ -95,6 +97,7 @@ eoi-dl/
 
 **Core Documents:**
 
+- [Student Self-Study Guide (Week 1 → Week 2)](docs/STUDENT_WEEK1_GUIDE.md)
 - [Problem Statement &amp; Plan (Markdown)](<Single-Image%20Telescope%20Autofocus%20—%20Problem%20Statement%20&%20Plan.md>) · [PDF](<Single-Image%20Telescope%20Autofocus%20—%20Problem%20Statement%20&%20Plan.pdf>) · [DOCX](<Single-Image%20Telescope%20Autofocus%20—%20Problem%20Statement%20&%20Plan.docx>)
 - [Dataset Card — Toy Defocused-Star Set (benchmark v0)](<Dataset%20Card%20—%20Toy%20Defocused-Star%20Set%20%28benchmark%20v0%29.md>)
 - [Workflow Procedure &amp; Prompt Catalog](WORKFLOW_PROCEDURE.md)
@@ -108,24 +111,24 @@ eoi-dl/
 In short: **`Benchmark v0/`** is a non-physical toy benchmark built only to time CPU training and check the training loop, whereas **`Fourier-optics simulator/`** contains the physical Fourier-optics simulator (`star_sim.py`) and its generated **Dataset v1** (`defocus_stars_v1.npz`) calibrated against a real telescope frame.
 
 > [!WARNING]
-> **Do not train or evaluate the autofocus model on [`Benchmark v0/toy_defocus_stars_v0.npz`](Benchmark%20v0/README.md).** Its sign accuracy (`98.2%` in 3 epochs) relies on an invented ring-width rule (`w = 1.5 + 0.5·d`), not physical optics. Use it strictly for training-loop smoke tests and CPU timing.
+> **Do not train or evaluate the autofocus model on [`Benchmark v0/toy_defocus_stars_v0.npz`](<Benchmark%20v0/README.md>).** Its sign accuracy (`98.2%` in 3 epochs) relies on an invented ring-width rule (`w = 1.5 + 0.5·d`), not physical optics. Use it strictly for training-loop smoke tests and CPU timing.
 
-| Property | `Benchmark v0/` (Toy Benchmark) | `Fourier-optics simulator/` (Physical Dataset v1) |
-|---|---|---|
-| **Purpose** | CPU throughput & training-loop smoke test only | First realistic physical training/validation dataset |
-| **Archive & size** | `toy_defocus_stars_v0.npz` (~60 MB) | `defocus_stars_v1.npz` (~109 MB) |
-| **Image tensor** | `counts`: `(20000, 1, 64, 64)`, `uint16` (`scale = 200.0`) | `adu`: `(20000, 64, 64)`, `uint16` (includes `100 ADU` bias) |
-| **Target label** | `d`: normalized `[-1, 1]` (`float32`, no physical unit) | `dz_um`: `[-1210, +1210] µm`; `defocus_waves`: `[-11, +11]` |
-| **Physics / optics** | None (Gaussian ring `R = 2 + 12\|d\|` + Poisson noise) | `\|FFT(pupil)\|²`, 30% obstruction, Kolmogorov screens, Moffat seeing, ADU noise |
-| **Sign mechanism** | Invented shortcut (`w = 1.5 + 0.5·d`) | `0.4 waves` spherical aberration (`Z11`) |
-| **Per-image metadata** | None | 13 parameter arrays (`seeing_fwhm_px`, `moffat_beta`, `d_over_r0`, `shift_x/y_px`, `sky_e`, `read_noise_e`, `ring_snr`, `flux_e`, `astig0/45_waves`, `comax/y_waves`) + JSON `config` |
-| **Splits** | `train_idx` `18,000` / `test_idx` `2,000` | `train_idx` `16,000` / `val_idx` `2,000` / `test_idx` `2,000` |
-| **Baseline CNN check** | `MAE 0.012`, `98.2%` sign (3 epochs, `172 s` — shortcut) | `MAE 148 µm`, `88.9%` overall sign; `95–98%` for `\|dz\| > 400 µm` (4 epochs, `183 s`) |
+| Property                        | `Benchmark v0/` (Toy Benchmark)                                                                                                                                                                                                                                                                                                        | `Fourier-optics simulator/` (Physical Dataset v1)                                                                                                                                                                     |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Purpose**               | CPU throughput & training-loop smoke test only                                                                                                                                                                                                                                                                                           | First realistic physical training/validation dataset                                                                                                                                                                    |
+| **Archive & size**        | `toy_defocus_stars_v0.npz` (~60 MB)                                                                                                                                                                                                                                                                                                    | `defocus_stars_v1.npz` (~109 MB)                                                                                                                                                                                      |
+| **Image tensor**          | `counts`: `(20000, 1, 64, 64)`, `uint16` (`scale = 200.0`)                                                                                                                                                                                                                                                                       | `adu`: `(20000, 64, 64)`, `uint16` (includes `100 ADU` bias)                                                                                                                                                    |
+| **Target label**          | `d`: normalized `[-1, 1]` (`float32`, no physical unit)                                                                                                                                                                                                                                                                            | `dz_um`: `[-1210, +1210] µm`; `defocus_waves`: `[-11, +11]`                                                                                                                                                    |
+| **Physics / optics**      | None (Gaussian ring `R = 2 + 12\|d\|` + Poisson noise)                                                                                                                                                                                                                                                                                   | `\|FFT(pupil)\|²`, 30% obstruction, Kolmogorov screens, Moffat seeing, ADU noise                                                                                                                                       |
+| **Sign mechanism**        | Invented shortcut (`w = 1.5 + 0.5·d`)                                                                                                                                                                                                                                                                                                 | `0.4 waves` spherical aberration (`Z11`)                                                                                                                                                                            |
+| **Per-image metadata**    | None                                                                                                                                                                                                                                                                                                                                     | 13 parameter arrays (`seeing_fwhm_px`, `moffat_beta`, `d_over_r0`, `shift_x/y_px`, `sky_e`, `read_noise_e`, `ring_snr`, `flux_e`, `astig0/45_waves`, `comax/y_waves`) + JSON `config`             |
+| **Splits**                | `train_idx` `18,000` / `test_idx` `2,000`                                                                                                                                                                                                                                                                                        | `train_idx` `16,000` / `val_idx` `2,000` / `test_idx` `2,000`                                                                                                                                               |
+| **Baseline CNN check**    | `MAE 0.012`, `98.2%` sign (3 epochs, `172 s` — shortcut)                                                                                                                                                                                                                                                                          | `MAE 148 µm`, `88.9%` overall sign; `95–98%` for `\|dz\| > 400 µm` (4 epochs, `183 s`)                                                                                                                       |
 | **Claude session origin** | [Phase 2](WORKFLOW_PROCEDURE.md#phase-2-sandbox-capability--labelling-requirement) ([P-02](WORKFLOW_PROCEDURE.md#prompt-p-02)) & [Phase 4](WORKFLOW_PROCEDURE.md#phase-4-toy-dataset-documentation--release) ([P-05](WORKFLOW_PROCEDURE.md#prompt-p-05)–[P-07](WORKFLOW_PROCEDURE.md#prompt-p-07), [P-09](WORKFLOW_PROCEDURE.md#prompt-p-09)) | [Phase 6](WORKFLOW_PROCEDURE.md#phase-6-physical-simulator-calibrated-on-a-real-frame) ([P-10](WORKFLOW_PROCEDURE.md#prompt-p-10) real-frame comparison & [P-11](WORKFLOW_PROCEDURE.md#prompt-p-11) simulator + 20k build) |
 
 ### Assumed Optical & Noise Parameters (`Fourier-optics simulator/` — Dataset v1)
 
-Configured in `Telescope` and `Ranges` inside [`Fourier-optics simulator/star_sim.py`](Fourier-optics%20simulator/star_sim.py) as typical placeholder hardware until the student's real setup is specified:
+Configured in `Telescope` and `Ranges` inside [`Fourier-optics simulator/star_sim.py`](<Fourier-optics%20simulator/star_sim.py>) as typical placeholder hardware until the student's real setup is specified:
 
 - **Optics:** `200 mm` aperture, `1000 mm` focal length (`f/5`), `30%` central obstruction, `0` spider vanes, `λ = 0.55 µm`, `3.76 µm` pixel (`1.37 λ/D` per pixel), `dz = 110 µm/wave` ($8 N^2 \lambda$), `0.4 waves` fixed spherical aberration (`Z11`), random astigmatism/coma (`0.15 waves RMS` each).
 - **Atmosphere & framing:** Kolmogorov phase screen (`D/r0` in `2.0–5.0`), Moffat seeing (`FWHM 6–12 px`, `β 2.5–4.5`), Fourier-tilt sub-pixel center jitter (`±3.0 px`).
@@ -170,7 +173,7 @@ python make_toy_defocus_stars.py                       # rebuilds toy_defocus_st
 python plot_toy_samples.py toy_defocus_stars_v0.npz toy_samples_v0.png
 ```
 
-To adapt the simulator to a real telescope, edit `Telescope` and `Ranges` in [`Fourier-optics simulator/star_sim.py`](Fourier-optics%20simulator/star_sim.py), and replace the placeholder `preprocess()` function so the exact same preprocessing is applied to both synthetic and real frames.
+To adapt the simulator to a real telescope, edit `Telescope` and `Ranges` in [`Fourier-optics simulator/star_sim.py`](<Fourier-optics%20simulator/star_sim.py>), and replace the placeholder `preprocess()` function so the exact same preprocessing is applied to both synthetic and real frames.
 
 ---
 
@@ -205,12 +208,12 @@ Each weekly stage ends at a gate that must pass before moving forward (falling b
 
 ### Known Simulator Limits (`Fourier-optics simulator/` — Dataset v1)
 
-Documented in [`Fourier-optics simulator/README_v1.md`](Fourier-optics%20simulator/README_v1.md) and [Phase 6](WORKFLOW_PROCEDURE.md#phase-6-physical-simulator-calibrated-on-a-real-frame):
+Documented in [`Fourier-optics simulator/README_v1.md`](<Fourier-optics%20simulator/README_v1.md>) and [Phase 6](WORKFLOW_PROCEDURE.md#phase-6-physical-simulator-calibrated-on-a-real-frame):
 
 - **Single-screenshot calibration:** Parameters were fit to grayscale values read from one screenshot rather than true raw 16-bit FITS ADU frames.
 - **Assumed spherical aberration:** The `0.4 waves` (`Z11`) asymmetry is an estimate; real sign magnitude must be measured from an actual intra-/extra-focal focuser sweep.
 - **Simplified imaging physics:** Monochromatic (`0.55 µm`) with no chromatic smearing, no spider vanes by default (`spider_vanes = 0`), no saturation (`flux` is SNR-scaled below `65,535`), and no hot pixels, cosmic rays, sky gradients, or neighboring stars.
-- **Placeholder preprocessing:** `preprocess()` in [`Fourier-optics simulator/star_sim.py`](Fourier-optics%20simulator/star_sim.py) uses MAD + `99.5`th percentile clipping as a stand-in for the real `"preprocesada"` routine.
+- **Placeholder preprocessing:** `preprocess()` in [`Fourier-optics simulator/star_sim.py`](<Fourier-optics%20simulator/star_sim.py>) uses MAD + `99.5`th percentile clipping as a stand-in for the real `"preprocesada"` routine.
 
 ### Open Decisions (Before Locking Week 1)
 
@@ -218,7 +221,7 @@ Documented in [`Fourier-optics simulator/README_v1.md`](Fourier-optics%20simulat
 - [ ] Lock down the canonical unit for $\Delta z$ (focuser steps, `µm` at focal plane, or waves of defocus / depth-of-focus units).
 - [ ] Agree on final numerical targets for MAE, sign accuracy, and closed-loop autofocus moves.
 - [ ] Capture a real FITS focuser sweep (`FOCPOS` header) to measure true spherical aberration and validate real-sky sign accuracy.
-- [ ] Replace placeholder `preprocess()` in [`Fourier-optics simulator/star_sim.py`](Fourier-optics%20simulator/star_sim.py) with the real preprocessing step and re-calibrate on raw FITS frames.
+- [ ] Replace placeholder `preprocess()` in [`Fourier-optics simulator/star_sim.py`](<Fourier-optics%20simulator/star_sim.py>) with the real preprocessing step and re-calibrate on raw FITS frames.
 
 ---
 
@@ -226,12 +229,12 @@ Documented in [`Fourier-optics simulator/README_v1.md`](Fourier-optics%20simulat
 
 All artifacts were generated in an external Claude conversation ([`claude.txt`](claude.txt): [claude.ai/chat/34b3689f-422c-4f62-bfbc-76436a93de3d](https://claude.ai/chat/34b3689f-422c-4f62-bfbc-76436a93de3d), 2026-11-18, 10:14–11:22 Europe/Madrid) and distilled in [`WORKFLOW_PROCEDURE.md`](WORKFLOW_PROCEDURE.md), which records the [Chronological Prompt Index](WORKFLOW_PROCEDURE.md#a1-chronological-prompt-index), verbatim prompts [`P-01`–`P-12`](WORKFLOW_PROCEDURE.md#a2-exhaustive-verbatim-prompt-catalog), and full [Traceability Matrix](WORKFLOW_PROCEDURE.md#a3-comprehensive-traceability-matrix-prompt--phase--artifacts--commits):
 
-| Phase | Focus Area | Claude Prompts | Primary Outcome / Artifacts |
-|---|---|---|---|
-| **[Phase 1](WORKFLOW_PROCEDURE.md#phase-1-data-source-survey)** | Data source survey | [P-01](WORKFLOW_PROCEDURE.md#prompt-p-01) | Confirmed no Kaggle dataset carries signed focus labels; defined synthetic-train / real-test split |
-| **[Phase 2](WORKFLOW_PROCEDURE.md#phase-2-sandbox-capability--labelling-requirement)** | Sandbox capability & labelling | [P-02](WORKFLOW_PROCEDURE.md#prompt-p-02), [P-03](WORKFLOW_PROCEDURE.md#prompt-p-03) | Benchmarked 2-CPU PyTorch (`64×64` at `~340 img/s` via `bench.py`); defined `Δz = FOCPOS − p*` sweep labelling |
-| **[Phase 3](WORKFLOW_PROCEDURE.md#phase-3-problem-statement--plan)** | Problem statement & plan | [P-04](WORKFLOW_PROCEDURE.md#prompt-p-04) | Authored 6-section problem spec & 6-week gated roadmap |
-| **[Phase 4](WORKFLOW_PROCEDURE.md#phase-4-toy-dataset-documentation--release)** | Toy dataset release (`Benchmark v0/`) | [P-05](WORKFLOW_PROCEDURE.md#prompt-p-05), [P-06](WORKFLOW_PROCEDURE.md#prompt-p-06), [P-07](WORKFLOW_PROCEDURE.md#prompt-p-07), [P-09](WORKFLOW_PROCEDURE.md#prompt-p-09) | Released [`Benchmark v0/`](Benchmark%20v0/README.md) (`toy_defocus_stars_v0.npz`) & formal Dataset Card |
-| **[Phase 5](WORKFLOW_PROCEDURE.md#phase-5-plan-feasibility-check)** | Plan feasibility check | [P-08](WORKFLOW_PROCEDURE.md#prompt-p-08) | Verified Zenodo/BBBC network access, installed `astropy` & `poppy`, mapped runnable weeks |
-| **[Phase 6](WORKFLOW_PROCEDURE.md#phase-6-physical-simulator-calibrated-on-a-real-frame)** | Calibrated physical simulator (`Fourier-optics simulator/` → Dataset v1) | [P-10](WORKFLOW_PROCEDURE.md#prompt-p-10), [P-11](WORKFLOW_PROCEDURE.md#prompt-p-11) | Built [`Fourier-optics simulator/star_sim.py`](Fourier-optics%20simulator/star_sim.py), fit real frame (`RMS 0.04`), generated 20k sharded ADU images, ran 4-epoch CNN check (`88.9%` sign) |
-| **[Phase 7](WORKFLOW_PROCEDURE.md#phase-7-process-distillation)** | Process distillation | [P-12](WORKFLOW_PROCEDURE.md#prompt-p-12) | Compiled [`WORKFLOW_PROCEDURE.md`](WORKFLOW_PROCEDURE.md) |
+| Phase                                                                                           | Focus Area                                                                  | Claude Prompts                                                                                                                                                         | Primary Outcome / Artifacts                                                                                                                                                                        |
+| ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **[Phase 1](WORKFLOW_PROCEDURE.md#phase-1-data-source-survey)**                            | Data source survey                                                          | [P-01](WORKFLOW_PROCEDURE.md#prompt-p-01)                                                                                                                               | Confirmed no Kaggle dataset carries signed focus labels; defined synthetic-train / real-test split                                                                                                 |
+| **[Phase 2](WORKFLOW_PROCEDURE.md#phase-2-sandbox-capability--labelling-requirement)**     | Sandbox capability & labelling                                              | [P-02](WORKFLOW_PROCEDURE.md#prompt-p-02), [P-03](WORKFLOW_PROCEDURE.md#prompt-p-03)                                                                                     | Benchmarked 2-CPU PyTorch (`64×64` at `~340 img/s` via `bench.py`); defined `Δz = FOCPOS − p*` sweep labelling                                                                          |
+| **[Phase 3](WORKFLOW_PROCEDURE.md#phase-3-problem-statement--plan)**                       | Problem statement & plan                                                    | [P-04](WORKFLOW_PROCEDURE.md#prompt-p-04)                                                                                                                               | Authored 6-section problem spec & 6-week gated roadmap                                                                                                                                             |
+| **[Phase 4](WORKFLOW_PROCEDURE.md#phase-4-toy-dataset-documentation--release)**            | Toy dataset release (`Benchmark v0/`)                                     | [P-05](WORKFLOW_PROCEDURE.md#prompt-p-05), [P-06](WORKFLOW_PROCEDURE.md#prompt-p-06), [P-07](WORKFLOW_PROCEDURE.md#prompt-p-07), [P-09](WORKFLOW_PROCEDURE.md#prompt-p-09) | Released [`Benchmark v0/`](<Benchmark%20v0/README.md>) (`toy_defocus_stars_v0.npz`) & formal Dataset Card                                                                                       |
+| **[Phase 5](WORKFLOW_PROCEDURE.md#phase-5-plan-feasibility-check)**                        | Plan feasibility check                                                      | [P-08](WORKFLOW_PROCEDURE.md#prompt-p-08)                                                                                                                               | Verified Zenodo/BBBC network access, installed `astropy` & `poppy`, mapped runnable weeks                                                                                                      |
+| **[Phase 6](WORKFLOW_PROCEDURE.md#phase-6-physical-simulator-calibrated-on-a-real-frame)** | Calibrated physical simulator (`Fourier-optics simulator/` → Dataset v1) | [P-10](WORKFLOW_PROCEDURE.md#prompt-p-10), [P-11](WORKFLOW_PROCEDURE.md#prompt-p-11)                                                                                     | Built [`Fourier-optics simulator/star_sim.py`](<Fourier-optics%20simulator/star_sim.py>), fit real frame (`RMS 0.04`), generated 20k sharded ADU images, ran 4-epoch CNN check (`88.9%` sign) |
+| **[Phase 7](WORKFLOW_PROCEDURE.md#phase-7-process-distillation)**                          | Process distillation                                                        | [P-12](WORKFLOW_PROCEDURE.md#prompt-p-12)                                                                                                                               | Compiled [`WORKFLOW_PROCEDURE.md`](WORKFLOW_PROCEDURE.md)                                                                                                                                         |
