@@ -612,3 +612,15 @@ Report 06 doesn't retrain the size model or rerun HFR. For distance alone, the s
 **Anexados Prompts 1–23 en `antigravity/01-foundations/NOTES-LOG.md`.**
 
 Logged the whole session from its first prompt, copied from the transcript.
+
+---
+
+## Prompt 24: Commit and push
+
+Look for changes, create a detailed commit & push
+
+## Response 24
+
+**Committed the report 06 annex and the session log as `53fb283`, pushed on `docs/report-06-annex-and-log`.**
+
+The changes are not in `master` yet. The two links in the header of the report 06 annex are broken, because they start with `REPORTS/` from inside that folder; they were committed as written. This log entry goes in a second commit on the same branch.
