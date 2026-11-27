@@ -58,6 +58,7 @@ apply it identically to synthetic and real images.
 - [`train_check_v1.py`](train_check_v1.py): 4-epoch 4-block CNN sanity check reporting test MAE and sign accuracy per `|dz|` bin.
 - [`hfr_baseline.py`](hfr_baseline.py): classical half-flux-radius baseline for |dz| (results below).
 - [`cnn_vs_hfr.py`](cnn_vs_hfr.py): trains the 4-block CNN and compares it with HFR on |dz|.
+- [`signed_robustness.py`](signed_robustness.py): trains the signed CNN to convergence, saves `weights/`, reports sign accuracy by condition ([report 06](../REPORTS/06-signed-defocus-robustness.md)).
 - [`samples_v1.png`](samples_v1.png): 12-star sample grid from `dz = -1200 µm` to `+1200 µm`.
 - [`sim_vs_real_v1.png`](sim_vs_real_v1.png): comparison against the real raw frame, radial profile fit, and noise-free intra/extra sign cue.
 

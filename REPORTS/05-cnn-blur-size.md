@@ -89,3 +89,82 @@ The repeat run had no validation-based epoch choice. At 4 epochs the CNN did not
 - Train beyond 40 epochs until the validation error stops falling.
 - Save the trained weights.
 - Repeat after recalibrating the simulator with the real optics.
+
+## Annexes
+
+Report 05 compares three estimators of |Δz|. Annex A describes the network that both CNNs share, annexes B and C the two ways of using it, and annex D the classical baseline, which is not a network.
+
+### Annex A · Shared 4-block CNN
+
+```mermaid
+flowchart TD
+    I["Star cut-out<br/>1 × 64 × 64"] --> B1["Block 1: Conv 1→32, ReLU, MaxPool<br/>32 × 32 × 32"]
+    B1 --> B2["Block 2: Conv 32→64, ReLU, MaxPool<br/>64 × 16 × 16"]
+    B2 --> B3["Block 3: Conv 64→128, ReLU, MaxPool<br/>128 × 8 × 8"]
+    B3 --> B4["Block 4: Conv 128→128, ReLU<br/>128 × 8 × 8"]
+    B4 --> GAP["Global average pool<br/>128"]
+    GAP --> H1["Linear 128→64, ReLU<br/>64"]
+    H1 --> H2["Linear 64→1<br/>one number"]
+```
+
+- **Convolutions** (3×3, padding 1) keep the image size and learn local patterns such as edges, ring borders and brightness gradients.
+- **ReLU** sets negative responses to zero, which makes the network non-linear.
+- **Max pooling** (2×2) halves height and width after blocks 1–3, so later filters cover a wider part of the star.
+- **Receptive field:** before the global pool, each of the 8×8 positions sees a 38×38 px patch (3, 8, 18 and 38 px after blocks 1–4). A large donut does not fit in one patch.
+- **Global average pool** averages each of the 128 feature maps into one value. It discards position, which should help with off-centre stars; this was not tested.
+- **Head** combines the 128 values into one number.
+
+Output shapes and the total of 248,577 parameters were checked in PyTorch.
+
+### Annex B · Size model (target |Δz|)
+
+```mermaid
+flowchart LR
+    A["Raw ADU<br/>64 × 64"] --> N["Subtract border median,<br/>divide by border std and by 10"]
+    N --> C["CNN of annex A"]
+    C --> S["Output × s"]
+    S --> E["Absolute value:<br/>estimate of size"]
+    T["Label: size of Δz, divided by s"] -. "L1 loss, training only" .-> C
+```
+
+- s is the largest |Δz| in the dataset, about 1,210 µm.
+- The label is never negative, so the network only has to learn how large the blur is.
+- The output is not constrained to be positive; the absolute value is taken when scoring.
+- It cannot say which way to move the focuser.
+
+### Annex C · Signed model (target Δz)
+
+```mermaid
+flowchart LR
+    A["Raw ADU<br/>64 × 64"] --> N["Same normalisation<br/>as annex B"]
+    N --> C["CNN of annex A"]
+    C --> S["Output × s:<br/>signed estimate"]
+    S --> D["Sign: direction to move"]
+    S --> M["Absolute value: distance to move"]
+    T["Label: signed Δz, divided by s"] -. "L1 loss, training only" .-> C
+```
+
+- Only the label differs from annex B; layers, parameter count and optimiser are the same.
+- It must learn size and direction with one output.
+- A likely reason for its larger error on |Δz|, not tested here: when the sign is ambiguous, L1 loss favours a value between the two options, near zero, which understates the size.
+
+### Annex D · HFR baseline
+
+[`hfr_baseline.py`](../Fourier-optics%20simulator/hfr_baseline.py), with the settings of report [04](04-hfr-baseline.md).
+
+```mermaid
+flowchart TD
+    A["Raw ADU<br/>64 × 64"] --> BG["Subtract the median<br/>of the 4 px border"]
+    BG --> SM["3×3 mean filter,<br/>keep pixels above 2σ"]
+    SM --> CE["Flux-weighted centroid"]
+    BG --> FL["Flux within 38 px<br/>of the centroid"]
+    CE --> FL
+    FL --> H["HFR: radius that holds<br/>half of that flux"]
+    H --> CU["Interpolate on the<br/>calibration curve"]
+    TR["16,000 train images:<br/>median size per HFR bin, 80 bins,<br/>forced non-decreasing"] --> CU
+    CU --> O["Estimate of size"]
+```
+
+- The smoothed image is used only to find the centre; the flux is summed from the unsmoothed one.
+- Negative pixels are kept in the flux sum, so that background noise averages out.
+- The only fitted part is the calibration curve. It has no sign information.
