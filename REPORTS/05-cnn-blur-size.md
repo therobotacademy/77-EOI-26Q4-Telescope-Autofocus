@@ -15,6 +15,25 @@ Estimate |Δz| with a small CNN. **Gate:** the 4-block CNN beats the HFR baselin
 - Train 16,000 images; the epoch with the lowest error on the 2,000 validation images is kept; test 2,000 images.
 - Three seeds each. Confidence intervals: paired bootstrap over test images, 10,000 resamples.
 
+### Network architecture
+
+Defined in `make_net()` of [`cnn_vs_hfr.py`](../Fourier-optics%20simulator/cnn_vs_hfr.py). Both targets use the same network. All convolutions are 3×3 with padding 1 and stride 1.
+
+| Stage | Layers | Output (channels × height × width) | Parameters |
+|---|---|---|---|
+| Input | normalised star cut-out | 1 × 64 × 64 | 0 |
+| Block 1 | Conv 1→32, ReLU, MaxPool 2×2 | 32 × 32 × 32 | 320 |
+| Block 2 | Conv 32→64, ReLU, MaxPool 2×2 | 64 × 16 × 16 | 18,496 |
+| Block 3 | Conv 64→128, ReLU, MaxPool 2×2 | 128 × 8 × 8 | 73,856 |
+| Block 4 | Conv 128→128, ReLU, global average pool | 128 × 1 × 1 | 147,584 |
+| Head 1 | Flatten, Linear 128→64, ReLU | 64 | 8,256 |
+| Head 2 | Linear 64→1 | 1 | 65 |
+| **Total** | | | **248,577** |
+
+- **No** batch normalisation, dropout or output activation.
+- **Input:** (ADU − border median) / (border standard deviation) / 10, with a 4 px border.
+- **Output:** one number, multiplied by the largest |Δz| in the dataset (about 1,210 µm) to give µm. The training target is divided by the same value.
+
 ## RESULTS
 
 ### 40 epochs (about 80 s per training)
