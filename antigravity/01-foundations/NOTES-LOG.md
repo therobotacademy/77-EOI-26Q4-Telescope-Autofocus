@@ -624,3 +624,15 @@ Look for changes, create a detailed commit & push
 **Committed the report 06 annex and the session log as `53fb283`, pushed on `docs/report-06-annex-and-log`.**
 
 The changes are not in `master` yet. The two links in the header of the report 06 annex are broken, because they start with `REPORTS/` from inside that folder; they were committed as written. This log entry goes in a second commit on the same branch.
+
+---
+
+## Prompt 25: Fix and merge
+
+Fix and merge
+
+## Response 25
+
+**Fixed the two annex links in report 06; the merge into `master` follows this commit.**
+
+This entry is committed before the merge, so it records the request and the link fix, not the merge result.

@@ -91,7 +91,7 @@ At |Δz| ≥ 200 µm, sign accuracy is 97.8% inside focus (821 images) and 98.5%
 - Report 05 asks **how large** the defocus is, and whether a CNN measures that better than HFR.
 - Report 06 asks **which direction** it is, and under which conditions that answer holds.
 
-|                      | [Report 05](REPORTS/05-cnn-blur-size.md) | [Report 06](REPORTS/06-signed-defocus-robustness.md)                              |
+|                      | [Report 05](05-cnn-blur-size.md) | [Report 06](06-signed-defocus-robustness.md)                              |
 | -------------------- | --------------------------------------- | -------------------------------------------------------------------------------- |
 | Quantity of interest | Size, \|Δz\|                           | Signed value, Δz                                                                |
 | Models               | HFR, size CNN, signed CNN               | Signed CNN only                                                                  |
