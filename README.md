@@ -89,6 +89,7 @@ Top row: inside focus (`dz < 0`, sharper ring outer edge, deeper hole). Bottom r
     ├── star_sim.py                                               # Fourier-optics simulator & placeholder preprocess()
     ├── make_dataset_v1.py                                        # Sharded 20k-image dataset builder
     ├── plot_samples_v1.py                                        # 2×6 ADU grid plotter
+    ├── hfr_baseline.py                                           # Half-flux-radius baseline for |dz| (numpy only)
     ├── train_check_v1.py                                         # 4-epoch 4-block CNN sanity check
     ├── defocus_stars_v1.npz                                      # 20,000 × 64×64 uint16 ADU + metadata (109 MB)
     ├── samples_v1.png                                            # Rendered 2×6 grid across dz
@@ -161,6 +162,7 @@ Run commands from inside each directory so relative imports (`star_sim`) and def
 ```bash
 # 1. Fourier-optics simulator/ — Physical Dataset v1 pipeline
 cd "Fourier-optics simulator"
+python hfr_baseline.py defocus_stars_v1.npz            # classical |dz| baseline (numpy only)
 python train_check_v1.py defocus_stars_v1.npz 4        # 4-epoch CNN sanity check (~3 min on 2 CPUs)
 python plot_samples_v1.py defocus_stars_v1.npz samples_v1.png
 python make_dataset_v1.py 20000 defocus_stars_v1.npz   # sharded rebuild (~7 min on 2 CPUs)
@@ -186,8 +188,8 @@ Each weekly stage ends at a gate that must pass before moving forward (falling b
 | Week        | Stage                                             | Gate                                                                         | Repo Status                                                                       |
 | ----------- | ------------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | **1** | Optical model & star simulator                    | Sign is visible (intra vs. extra differ at equal $\lvert \Delta z \rvert$) | **Prototype done** (`star_sim.py` with assumed 200 mm f/5 & 0.4 waves SA) |
-| **2** | Labelled dataset & HFR baseline                   | HFR error measured per $\lvert \Delta z \rvert$ bin on synthetic test set  | **Dataset v1 built** (`defocus_stars_v1.npz`); HFR baseline pending       |
-| **3** | First CNN: blur size ($\lvert \Delta z \rvert$) | Small 4-block CNN beats HFR baseline on same test set                        | **Pipeline tested** (`train_check_v1.py`); HFR comparison pending         |
+| **2** | Labelled dataset & HFR baseline                   | HFR error measured per $\lvert \Delta z \rvert$ bin on synthetic test set  | **Done:** Dataset v1; HFR baseline `64.9 µm` MAE of `\|dz\|` (test)      |
+| **3** | First CNN: blur size ($\lvert \Delta z \rvert$) | Small 4-block CNN beats HFR baseline on same test set                        | **Pipeline tested**; CNN `\|dz\|` error not yet compared with HFR        |
 | **4** | Signed defocus & robustness                       | Sign target met outside near-focus zone across seeing/jitter/SNR             | **Initial check**: `88.9%` overall, `95–98%` for `\|dz\| > 400 µm`    |
 | **5** | Real images (MILAN + focuser sweep)               | Real-vs-synthetic error gap measured on same metrics                         | **Pending** (calibrated visually on 1 screenshot so far)                    |
 | **6** | One-shot autofocus loop & report                  | Closed loop reaches focus on simulated defocus runs                          | **Pending**                                                                 |

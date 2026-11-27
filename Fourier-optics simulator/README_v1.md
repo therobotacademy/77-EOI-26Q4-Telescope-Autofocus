@@ -56,8 +56,29 @@ apply it identically to synthetic and real images.
 - [`make_dataset_v1.py`](make_dataset_v1.py): sharded dataset generator (2,000 images per shard, merged into `defocus_stars_v1.npz`).
 - [`plot_samples_v1.py`](plot_samples_v1.py): plots a 2×6 raw ADU grid across defocus (`samples_v1.png`).
 - [`train_check_v1.py`](train_check_v1.py): 4-epoch 4-block CNN sanity check reporting test MAE and sign accuracy per `|dz|` bin.
+- [`hfr_baseline.py`](hfr_baseline.py): classical half-flux-radius baseline for |dz| (results below).
 - [`samples_v1.png`](samples_v1.png): 12-star sample grid from `dz = -1200 µm` to `+1200 µm`.
 - [`sim_vs_real_v1.png`](sim_vs_real_v1.png): comparison against the real raw frame, radial profile fit, and noise-free intra/extra sign cue.
+
+## HFR baseline (blur size only)
+
+`python hfr_baseline.py defocus_stars_v1.npz` (numpy only). It measures the half-flux radius of each
+star, then maps it to |dz| with a monotone curve fitted on the train split. Centroid threshold (2σ) and
+aperture (38 px radius) were chosen on the val split. HFR gives no sign.
+
+Test split (2,000 images): **MAE of |dz| 64.9 µm** (median error 54 µm; a constant guess gives 302 µm).
+Depth of focus (DoF) here means the quarter-wave tolerance ±2λN² = ±27.5 µm.
+
+| \|dz\| bin (µm) | n | MAE (µm) | MAE (DoF) | Bias (µm) |
+|---|---|---|---|---|
+| 0–200 | 357 | 84 | 3.0 | +72 |
+| 200–400 | 308 | 77 | 2.8 | −25 |
+| 400–800 | 664 | 65 | 2.3 | −10 |
+| 800–1200 | 657 | 49 | 1.8 | −8 |
+| 1200–1600 | 14 | 75 | 2.7 | −75 |
+
+The 148 µm of `train_check_v1.py` is a **signed** error, so it is not comparable with these numbers.
+The CNN's error on |dz| (`|abs(prediction) - abs(dz)|`) still has to be measured.
 
 ## Known limits
 
