@@ -57,6 +57,7 @@ apply it identically to synthetic and real images.
 - [`plot_samples_v1.py`](plot_samples_v1.py): plots a 2×6 raw ADU grid across defocus (`samples_v1.png`).
 - [`train_check_v1.py`](train_check_v1.py): 4-epoch 4-block CNN sanity check reporting test MAE and sign accuracy per `|dz|` bin.
 - [`hfr_baseline.py`](hfr_baseline.py): classical half-flux-radius baseline for |dz| (results below).
+- [`cnn_vs_hfr.py`](cnn_vs_hfr.py): trains the 4-block CNN and compares it with HFR on |dz|.
 - [`samples_v1.png`](samples_v1.png): 12-star sample grid from `dz = -1200 µm` to `+1200 µm`.
 - [`sim_vs_real_v1.png`](sim_vs_real_v1.png): comparison against the real raw frame, radial profile fit, and noise-free intra/extra sign cue.
 
@@ -78,7 +79,8 @@ Depth of focus (DoF) here means the quarter-wave tolerance ±2λN² = ±27.5 µm
 | 1200–1600 | 14 | 75 | 2.7 | −75 |
 
 The 148 µm of `train_check_v1.py` is a **signed** error, so it is not comparable with these numbers.
-The CNN's error on |dz| (`|abs(prediction) - abs(dz)|`) still has to be measured.
+On the same test split, the 4-block CNN trained on |dz| for 40 epochs reaches **46.6 µm** (mean of 3 seeds),
+see [report 05](../REPORTS/05-cnn-blur-size.md): `python cnn_vs_hfr.py defocus_stars_v1.npz 40 3` (torch).
 
 ## Known limits
 

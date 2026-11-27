@@ -19,7 +19,7 @@ the work is reported. A number is never reused.
 | 02 | [`02-sandbox-and-toy-benchmark.md`](02-sandbox-and-toy-benchmark.md) | CPU timing and toy set v0 (not usable as a result) | before 1 | Yes | Yes |
 | 03 | [`03-physical-simulator.md`](03-physical-simulator.md) | Optical model, calibration on one real frame, dataset v1, is the sign visible | 1 | Prototype, assumed optics | Yes |
 | 04 | [`04-hfr-baseline.md`](04-hfr-baseline.md) | HFR error per \|Δz\| bin on the synthetic test set | 2 | Yes | Yes |
-| 05 | `05-cnn-blur-size.md` | CNN against HFR on \|Δz\| | 3 | In progress | No |
+| 05 | [`05-cnn-blur-size.md`](05-cnn-blur-size.md) | CNN against HFR on \|Δz\| | 3 | Yes | Yes |
 | 06 | `06-signed-defocus-robustness.md` | Sign accuracy and error across seeing, jitter and SNR | 4 | Initial check only | No |
 | 07 | `07-real-images.md` | MILAN frames and a focuser sweep, real-to-synthetic gap | 5 | No | No |
 | 08 | `08-autofocus-loop-and-final.md` | Closed-loop moves to focus, overall conclusions | 6 | No | No |
