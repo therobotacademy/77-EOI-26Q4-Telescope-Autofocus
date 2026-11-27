@@ -10,7 +10,7 @@ The near-focus zone has not been agreed, so two limits are reported: |Δz| below
 
 ## Method
 
-- [`signed_robustness.py`](../Fourier-optics%20simulator/signed_robustness.py), conda env `xgnn` (RTX 2060): `python signed_robustness.py defocus_stars_v1.npz 300 30 3`.
+- [`signed_robustness.py`](<../Fourier-optics%20simulator/signed_robustness.py>), conda env `xgnn` (RTX 2060): `python signed_robustness.py defocus_stars_v1.npz 300 30 3`.
 - Signed 4-block CNN of report [05](05-cnn-blur-size.md) (annexes A and C), same normalisation, L1 loss, Adam 1e-3, batch 128.
 - Training stops after 30 epochs without a lower validation MAE (300 at most). The best-validation weights are scored once on the 2,000 test images.
 - Three seeds. Tables show the mean of the three models' scores.
@@ -21,49 +21,49 @@ The near-focus zone has not been agreed, so two limits are reported: |Δz| below
 ### Training
 
 | Seed | Best epoch | Epochs run | Val MAE (µm) | Test signed MAE (µm) | Test sign accuracy |
-|---|---|---|---|---|---|
-| 0 | 78 | 108 | 60.9 | 63.3 | 93.2% |
-| 1 | 70 | 100 | 69.5 | 71.2 | 92.8% |
-| 2 | 54 | 84 | 62.8 | 64.4 | 92.6% |
+| ---- | ---------- | ---------- | ------------- | --------------------- | ------------------ |
+| 0    | 78         | 108        | 60.9          | 63.3                  | 93.2%              |
+| 1    | 70         | 100        | 69.5          | 71.2                  | 92.8%              |
+| 2    | 54         | 84         | 62.8          | 64.4                  | 92.6%              |
 
 ### By |Δz| bin
 
-| \|Δz\| (µm) | n | Sign accuracy | Signed MAE (µm) | \|Δz\| MAE (µm) |
-|---|---|---|---|---|
-| 0–100 | 183 | 62.7% | 75.7 | 53.2 |
-| 100–200 | 174 | 74.3% | 102.1 | 70.5 |
-| 200–300 | 153 | 92.4% | 85.2 | 73.0 |
-| 300–400 | 155 | 97.2% | 70.6 | 63.3 |
-| 400–600 | 314 | 97.6% | 66.2 | 55.4 |
-| 600–800 | 350 | 99.1% | 54.6 | 48.3 |
-| 800–1210 | 671 | 99.5% | 55.4 | 50.7 |
+| \|Δz\| (µm) | n   | Sign accuracy | Signed MAE (µm) | \|Δz\| MAE (µm) |
+| ------------- | --- | ------------- | ---------------- | ----------------- |
+| 0–100        | 183 | 62.7%         | 75.7             | 53.2              |
+| 100–200      | 174 | 74.3%         | 102.1            | 70.5              |
+| 200–300      | 153 | 92.4%         | 85.2             | 73.0              |
+| 300–400      | 155 | 97.2%         | 70.6             | 63.3              |
+| 400–600      | 314 | 97.6%         | 66.2             | 55.4              |
+| 600–800      | 350 | 99.1%         | 54.6             | 48.3              |
+| 800–1210     | 671 | 99.5%         | 55.4             | 50.7              |
 
 ### Outside the near-focus zone
 
-| Images | n | Sign accuracy | Per seed | Signed MAE (µm) |
-|---|---|---|---|---|
-| All | 2000 | 92.8% | 93.2 / 92.8 / 92.6% | 66.3 |
-| \|Δz\| ≥ 200 µm | 1643 | **98.2%** | 98.4 / 97.9 / 98.2% | 61.5 |
-| \|Δz\| ≥ 400 µm | 1335 | **98.9%** | 99.3 / 98.7 / 98.8% | 57.7 |
+| Images             | n    | Sign accuracy   | Per seed            | Signed MAE (µm) |
+| ------------------ | ---- | --------------- | ------------------- | ---------------- |
+| All                | 2000 | 92.8%           | 93.2 / 92.8 / 92.6% | 66.3             |
+| \|Δz\| ≥ 200 µm | 1643 | **98.2%** | 98.4 / 97.9 / 98.2% | 61.5             |
+| \|Δz\| ≥ 400 µm | 1335 | **98.9%** | 99.3 / 98.7 / 98.8% | 57.7             |
 
 At |Δz| ≥ 200 µm, sign accuracy is 97.8% inside focus (821 images) and 98.5% outside (822).
 
 ### Robustness
 
-| Condition | n (≥ 200) | Sign acc. (≥ 200) | MAE (≥ 200) | n (≥ 400) | Sign acc. (≥ 400) | MAE (≥ 400) |
-|---|---|---|---|---|---|---|
-| Seeing FWHM 6–8 px | 558 | 98.2% | 61.6 | 455 | 99.0% | 57.0 |
-| Seeing FWHM 8–10 px | 571 | 98.5% | 57.6 | 458 | 99.1% | 55.1 |
-| Seeing FWHM 10–12 px | 514 | 97.7% | 65.8 | 422 | 98.7% | 61.3 |
-| Centre offset 0–1.5 px | 327 | 97.7% | 65.4 | 245 | 98.4% | 64.3 |
-| Centre offset 1.5–2.5 px | 570 | 98.3% | 62.8 | 478 | 99.2% | 58.9 |
-| Centre offset 2.5–4.3 px | 746 | 98.3% | 58.7 | 612 | 99.0% | 54.1 |
-| Ring SNR 3–6 | 553 | 97.9% | 67.2 | 465 | 98.9% | 62.8 |
-| Ring SNR 6–9 | 527 | 98.0% | 57.9 | 431 | 98.6% | 54.8 |
-| Ring SNR 9–12 | 563 | 98.5% | 59.2 | 439 | 99.3% | 55.2 |
-| D/r0 2–3 | 568 | 99.2% | 40.8 | 464 | 99.7% | 37.0 |
-| D/r0 3–4 | 530 | 97.8% | 63.0 | 427 | 99.1% | 56.2 |
-| D/r0 4–5 | 545 | 97.4% | 81.6 | 444 | 97.9% | 80.9 |
+| Condition                 | n (≥ 200) | Sign acc. (≥ 200) | MAE (≥ 200) | n (≥ 400) | Sign acc. (≥ 400) | MAE (≥ 400) |
+| ------------------------- | ---------- | ------------------ | ------------ | ---------- | ------------------ | ------------ |
+| Seeing FWHM 6–8 px       | 558        | 98.2%              | 61.6         | 455        | 99.0%              | 57.0         |
+| Seeing FWHM 8–10 px      | 571        | 98.5%              | 57.6         | 458        | 99.1%              | 55.1         |
+| Seeing FWHM 10–12 px     | 514        | 97.7%              | 65.8         | 422        | 98.7%              | 61.3         |
+| Centre offset 0–1.5 px   | 327        | 97.7%              | 65.4         | 245        | 98.4%              | 64.3         |
+| Centre offset 1.5–2.5 px | 570        | 98.3%              | 62.8         | 478        | 99.2%              | 58.9         |
+| Centre offset 2.5–4.3 px | 746        | 98.3%              | 58.7         | 612        | 99.0%              | 54.1         |
+| Ring SNR 3–6             | 553        | 97.9%              | 67.2         | 465        | 98.9%              | 62.8         |
+| Ring SNR 6–9             | 527        | 98.0%              | 57.9         | 431        | 98.6%              | 54.8         |
+| Ring SNR 9–12            | 563        | 98.5%              | 59.2         | 439        | 99.3%              | 55.2         |
+| D/r0 2–3                 | 568        | 99.2%              | 40.8         | 464        | 99.7%              | 37.0         |
+| D/r0 3–4                 | 530        | 97.8%              | 63.0         | 427        | 99.1%              | 56.2         |
+| D/r0 4–5                 | 545        | 97.4%              | 81.6         | 444        | 97.9%              | 80.9         |
 
 ## Discussion
 
@@ -83,3 +83,40 @@ At |Δz| ≥ 200 µm, sign accuracy is 97.8% inside focus (821 images) and 98.5%
 - Real images (report [07](README.md)): MILAN for blur size, a focuser sweep for the sign.
 - Test sensitivity to the spherical aberration value, which can be done in simulation before real data arrive.
 - Consider combining the size model's magnitude with the signed model's sign.
+
+---
+
+# ANNEX: Compares reports' scopes
+
+- Report 05 asks **how large** the defocus is, and whether a CNN measures that better than HFR.
+- Report 06 asks **which direction** it is, and under which conditions that answer holds.
+
+|                      | [Report 05](REPORTS/05-cnn-blur-size.md) | [Report 06](REPORTS/06-signed-defocus-robustness.md)                              |
+| -------------------- | --------------------------------------- | -------------------------------------------------------------------------------- |
+| Quantity of interest | Size, \|Δz\|                           | Signed value, Δz                                                                |
+| Models               | HFR, size CNN, signed CNN               | Signed CNN only                                                                  |
+| Main metric          | Mean error of \|Δz\|                   | Sign accuracy, and mean signed error                                             |
+| Training             | 40 epochs (also a 4-epoch run)          | Up to 300, stopping after 30 without improvement                                 |
+| Breakdowns           | By \|Δz\| bin                          | By finer \|Δz\| bins, inside or outside focus, seeing, centre offset, SNR, D/r0 |
+| Statistics           | 3 seeds, bootstrap interval against HFR | 3 seeds, no intervals                                                            |
+| Saved weights        | No                                      | Yes                                                                              |
+| Gate                 | CNN beats HFR: 46.6 against 64.9 µm    | Sign at least 95% away from focus: 98.2% for \|Δz\| ≥ 200 µm                  |
+
+Both use the same simulated dataset, test split and network.
+
+**The two error figures are not interchangeable.** For a true Δz of +300 µm and a prediction of −280 µm:
+
+- **Error of \|Δz\|** (report 05): \|280 − 300\| = 20 µm. The wrong direction doesn't count.
+- **Signed error** (report 06): \|−280 − 300\| = 580 µm. The wrong direction is heavily penalised.
+
+So don't compare report 05's 58.7 µm with report 06's 66.3 µm for the signed model. The like-for-like figures are:
+
+| Signed model                | 40 epochs   | Early stopping |
+| --------------------------- | ----------- | -------------- |
+| Mean signed error (µm)     | 69.6        | 66.3           |
+| Mean error of \|Δz\| (µm) | 58.7        | about 55.7     |
+| Sign accuracy, all images   | 92.3–92.8% | 92.8%          |
+
+The 55.7 µm is my own calculation from report 06's rounded bin table, not a direct script output.
+
+Report 06 doesn't retrain the size model or rerun HFR. For distance alone, the size CNN of report 05 is still the best estimator (46.6 µm); the signed CNN is the one that tells you which way to move the focuser.
